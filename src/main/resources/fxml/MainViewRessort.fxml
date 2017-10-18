@@ -94,7 +94,7 @@
                <children>
                   <ImageView fx:id="imageViewPicture" fitHeight="250.0" fitWidth="250.0" pickOnBounds="true" preserveRatio="true">
                      <image>
-                        <Image url="@../../resources/IntegraLogo.png" />
+                        <Image url="@../images/IntegraLogo.png" />
                      </image>
                   </ImageView>
                   <Label fx:id="labelName" text="Bitte QR Code scannen">
@@ -114,7 +114,7 @@
                         <ImageView fx:id="imageViewWebcam" fitHeight="270.0" fitWidth="360.0" nodeOrientation="RIGHT_TO_LEFT" pickOnBounds="true" preserveRatio="true" />
                         <ImageView fitHeight="200.0" fitWidth="200.0">
                            <image>
-                              <Image url="@../../resources/scannerOrange.png" />
+                              <Image url="@../images/scannerOrange.png" />
                            </image>
                         </ImageView>
                         <Rectangle fx:id="rectangleScanner" arcHeight="1.0" arcWidth="5.0" fill="#ff8000" height="20.0" opacity="0.5" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" width="195.0">
