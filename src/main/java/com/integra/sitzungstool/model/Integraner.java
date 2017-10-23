@@ -8,14 +8,16 @@ public class Integraner
 	private Image bild;
 	private String name;
 	private String ressort;
+        private String stab;
 	private boolean anwesend;
 	
-	public Integraner(String benutzerkennung, Image bild, String name, String ressort)
+	public Integraner(String benutzerkennung, Image bild, String name, String ressort, String stab)
 	{
 		this.benutzerkennung = benutzerkennung;
 		this.bild = bild;
 		this.name = name;
 		this.ressort = ressort;
+                this.stab = stab;
 		
 		this.anwesend = false;
 	}
@@ -63,6 +65,16 @@ public class Integraner
 	public void setRessort(String ressort)
 	{
 		this.ressort = ressort;
+	}
+        
+        public String getStab()
+	{
+		return this.stab;
+	}
+
+	public void setStab(String stab)
+	{
+		this.stab = stab;
 	}
 
 	
