@@ -68,7 +68,8 @@ public class MainViewController
 	public void init()
 	{			
 		//Integranet Daten ziehen
-		integraner = ServerCommunication.getIntegranetData();
+                ServerCommunication s = new ServerCommunication("gero.becker", "Dein Passwort");
+		integraner = s.getIntegraner();
 		
 		
 		//Scanner Animation
@@ -230,22 +231,22 @@ public class MainViewController
 	{
 		for(Integraner i : integraner)
 		{
-			if(i.getBenutzerkennung().equals(id))
+			if(i.getId().equals(id))
 			{
-				if(i.isAnwesend())
+				if(i.getAnwesend())
 				{
 					labelName.setText("Bereits eingeloggt");
 				}
 				else
 				{
 					labelName.setText(i.getName());
-					imageViewPicture.setImage(i.getBild());
+					// imageViewPicture.setImage(i.getBild());
 					i.setAnwesend(true);
 
 					
 					switch(i.getRessort())
 					{
-						case "IT":		listViewIT.getItems().add(i);
+						case "ressort-it":		listViewIT.getItems().add(i);
 									labelIT.setText("Ressort IT (" + listViewIT.getItems().size() + ")");
 									break;
 
