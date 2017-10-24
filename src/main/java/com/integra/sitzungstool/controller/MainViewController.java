@@ -95,8 +95,7 @@ public class MainViewController
     public void init()
     {			
         //Integranet Daten ziehen
-        ServerCommunication s = new ServerCommunication("gero.becker", "");
-        integraner = s.getIntegraner();
+        integraner = ServerCommunication.getIntegraner();
         
         createAnimations();
         createTasks();
@@ -288,7 +287,7 @@ public class MainViewController
                     //In Liste eintragen
                     switch(i.getRessort())
                     {
-                        case "IT":      listViewIT.getItems().add(i);
+                        case "ressort-it":      listViewIT.getItems().add(i);
                                         labelIT.setText("Ressort IT (" + listViewIT.getItems().size() + ")");
                                         break;
                     }
@@ -389,13 +388,15 @@ public class MainViewController
         //Prüfe Login Daten
         loginButton.addEventFilter(ActionEvent.ACTION, (ActionEvent event) ->
         {
-                //if (!ServerCommunication.vorstandLogin(textFieldUsername.getText(), passwordFieldPassword.getText()))
-                if (false)
+                if (!ServerCommunication.vorstandLogin(textFieldUsername.getText(), passwordFieldPassword.getText()))
                 {
                     passwordFieldPassword.clear();
                     textFieldUsername.requestFocus();
                     labelWrongPassword.setText("Falsche Login Daten!");
                     event.consume();
+                } else
+                {
+                    integraner = ServerCommunication.getIntegraner();
                 }
         });
         

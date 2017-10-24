@@ -26,7 +26,7 @@ public class Integraner
 	
 	public String toString()
 	{
-		return benutzerkennung;
+		return this.getName();
 	}
 
 	public String getBenutzerkennung()
@@ -51,7 +51,7 @@ public class Integraner
 
 	public String getName()
 	{
-		return this.name;
+		return this.name.replace("+", " ");
 	}
 
 	public void setName(String name)
