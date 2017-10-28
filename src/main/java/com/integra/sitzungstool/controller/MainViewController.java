@@ -279,7 +279,8 @@ public class MainViewController
                 else
                 {
                     labelName.setText("Hallo, " + i.getName().substring(0, i.getName().indexOf(" ")) + "!");
-                    // imageViewPicture.setImage(i.getBild());
+                    Image profilePicture = ServerCommunication.getProfilePicture(i.getBenutzerkennung());
+                    imageViewPicture.setImage(profilePicture);
                     textFieldKennung.setText("");
                     i.setAnwesend(true);
 
