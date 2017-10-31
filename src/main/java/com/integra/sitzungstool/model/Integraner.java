@@ -1,7 +1,5 @@
 package com.integra.sitzungstool.model;
 
-import java.util.Arrays;
-import org.apache.commons.lang3.text.WordUtils;
 import javafx.scene.image.Image;
 
 public class Integraner
@@ -24,6 +22,7 @@ public class Integraner
 		this.anwesend = false;
 	}
 	
+        @Override
 	public String toString()
 	{
 		return this.getName();
