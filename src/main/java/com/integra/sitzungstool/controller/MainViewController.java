@@ -95,7 +95,7 @@ public class MainViewController
     public void init()
     {			
         //Integranet Daten ziehen
-        integraner = ServerCommunication.getIntegranetData();
+        integraner = ServerCommunication.getIntegraner();
         
         createAnimations();
         createTasks();
@@ -279,7 +279,8 @@ public class MainViewController
                 else
                 {
                     labelName.setText("Hallo, " + i.getName().substring(0, i.getName().indexOf(" ")) + "!");
-                    imageViewPicture.setImage(i.getBild());
+                    Image profilePicture = ServerCommunication.getProfilePicture(i.getBenutzerkennung());
+                    imageViewPicture.setImage(profilePicture);
                     textFieldKennung.setText("");
                     i.setAnwesend(true);
 
@@ -287,7 +288,7 @@ public class MainViewController
                     //In Liste eintragen
                     switch(i.getRessort())
                     {
-                        case "IT":      listViewIT.getItems().add(i);
+                        case "ressort-it":      listViewIT.getItems().add(i);
                                         labelIT.setText("Ressort IT (" + listViewIT.getItems().size() + ")");
                                         break;
                     }
@@ -394,6 +395,9 @@ public class MainViewController
                     textFieldUsername.requestFocus();
                     labelWrongPassword.setText("Falsche Login Daten!");
                     event.consume();
+                } else
+                {
+                    integraner = ServerCommunication.getIntegraner();
                 }
         });
         

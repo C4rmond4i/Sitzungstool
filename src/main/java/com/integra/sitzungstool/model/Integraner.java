@@ -1,5 +1,7 @@
 package com.integra.sitzungstool.model;
 
+import java.util.Arrays;
+import org.apache.commons.lang3.text.WordUtils;
 import javafx.scene.image.Image;
 
 public class Integraner
@@ -24,7 +26,7 @@ public class Integraner
 	
 	public String toString()
 	{
-		return name;
+		return this.getName();
 	}
 
 	public String getBenutzerkennung()
@@ -49,7 +51,7 @@ public class Integraner
 
 	public String getName()
 	{
-		return this.name;
+		return this.name.replace("+", " ");
 	}
 
 	public void setName(String name)
