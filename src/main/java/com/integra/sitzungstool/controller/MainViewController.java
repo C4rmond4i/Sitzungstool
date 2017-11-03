@@ -256,7 +256,7 @@ public class MainViewController
         
         for(Integraner i : integraner)
         {
-            if(i.getBenutzerkennung().equals(id))
+            if(i.getBenutzerkennung().equals(id.toLowerCase()))
             {
                 foundUser = true;
                 
@@ -289,12 +289,45 @@ public class MainViewController
                     switch(i.getRessort())
                     {
                         case "ressort-it":      listViewIT.getItems().add(i);
-                                        labelIT.setText("Ressort IT (" + listViewIT.getItems().size() + ")");
-                                        break;
-                    }
+                                                labelIT.setText("Ressort IT (" + listViewIT.getItems().size() + ")");
+                                                break;
+                        case "ressort-per":     listViewPersonal.getItems().add(i);
+                                                labelPersonal.setText("Ressort Personal (" + listViewPersonal.getItems().size() + ")");
+                                                break;
+                        case "ressort-aq":      listViewAkquise.getItems().add(i);
+                                                labelAkquise.setText("Ressort Akquise (" + listViewAkquise.getItems().size() + ")");
+                                                break;
+                        case "ressort-pr":      listViewPR.getItems().add(i);
+                                                labelPR.setText("Ressort PR (" + listViewPR.getItems().size() + ")");
+                                                break;
+                        case "ressort-qm":      listViewQM.getItems().add(i);
+                                                labelQM.setText("Ressort QM (" + listViewQM.getItems().size() + ")");
+                                                break;
+                        case "keins":
+                            
+                                switch(i.getStab())
+                                {
+                                    case "stab-1v":     listViewVorstand1.getItems().add(i);
+                                                        labelVorstand1.setText("1. Vorstand & Stab (" + listViewVorstand1.getItems().size() + ")");
+                                                        break;
+                                    case "stab-2v":     listViewVorstand2.getItems().add(i);
+                                                        labelVorstand2.setText("2. Vorstand & Stab (" + listViewVorstand2.getItems().size() + ")");
+                                                        break;
+                                    case "stab-3v":     listViewVorstand3.getItems().add(i);
+                                                        labelVorstand3.setText("3. Vorstand & Stab (" + listViewVorstand3.getItems().size() + ")");
+                                                        break;
+                                    case "keiner":      listViewWeitere.getItems().add(i);
+                                                        labelWeitere.setText("Weitere (" + listViewWeitere.getItems().size() + ")");
+                                                        break;
+                                }
+                                break;
 
+                    }
+                    
                     //Anzahl erhöhen
-                    labelAmount.setText("(" + listViewIT.getItems().size() + ")");
+                    int amount = Integer.valueOf(labelAmount.getText().replace("(", "").replace(")", ""));
+                    amount++;
+                    labelAmount.setText("(" + amount + ")");
                     
                     
                     task.cancel();
