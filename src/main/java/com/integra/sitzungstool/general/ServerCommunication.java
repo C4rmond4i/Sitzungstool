@@ -4,12 +4,15 @@ import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 import com.integra.sitzungstool.model.Integraner;
+import com.integra.sitzungstool.model.Sitzung;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.List;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.scene.image.Image;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -17,6 +20,18 @@ import okhttp3.Response;
 
 public class ServerCommunication {
    private static OkHttpClient client;
+   public static Sitzung selectedSitzung;
+   
+   public static ObservableList<Sitzung> getSitzungen()
+   {
+        //Dummy Daten
+        ObservableList<Sitzung> sitzungen = FXCollections.observableArrayList();
+        sitzungen.add(new Sitzung("01.01.2017", "id 1"));
+        sitzungen.add(new Sitzung("08.01.2017", "id 2"));
+        sitzungen.add(new Sitzung("15.01.2017", "id 3"));
+              
+        return sitzungen;
+   }
    
    public static boolean vorstandLogin(String username, String password) {
        ServerCommunication.client = new OkHttpClient.Builder()

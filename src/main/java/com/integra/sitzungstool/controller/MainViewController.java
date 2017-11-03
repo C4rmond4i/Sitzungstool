@@ -10,6 +10,7 @@ import com.google.zxing.client.j2se.BufferedImageLuminanceSource;
 import com.google.zxing.common.HybridBinarizer;
 import com.integra.sitzungstool.general.ServerCommunication;
 import com.integra.sitzungstool.model.Integraner;
+import com.integra.sitzungstool.model.Sitzung;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Timer;
@@ -428,7 +429,8 @@ public class MainViewController
                     textFieldUsername.requestFocus();
                     labelWrongPassword.setText("Falsche Login Daten!");
                     event.consume();
-                } else
+                }
+                else
                 {
                     integraner = ServerCommunication.getIntegraner();
                 }
@@ -441,5 +443,40 @@ public class MainViewController
 
         //Anzeigen
         loginPopup.showAndWait();
+        showSitzungsAuswahlDialog(textFieldUsername.getText().toLowerCase());
+    }
+    
+    public void showSitzungsAuswahlDialog(String vorstandID)
+    {
+        Dialog sitzungsAuswahlPopup = new Dialog<>();
+        sitzungsAuswahlPopup.getDialogPane().setPadding(new Insets(5,5,5,5));
+        sitzungsAuswahlPopup.setTitle("Sitzungsauswahl");
+        sitzungsAuswahlPopup.initModality(Modality.APPLICATION_MODAL);
+        sitzungsAuswahlPopup.initOwner(labelName.getScene().getWindow());
+        sitzungsAuswahlPopup.setHeaderText("Bitte wählen Sie eine Veranstaltung aus.");
+        
+        // Set the button types.
+        ButtonType loginButtonType = new ButtonType("OK", ButtonData.OK_DONE);
+        sitzungsAuswahlPopup.getDialogPane().getButtonTypes().addAll(loginButtonType, ButtonType.CANCEL);
+        
+        //ListView erstellen und Daten laden
+        ListView<Sitzung> listViewSitzungsAuswahl = new ListView();
+        listViewSitzungsAuswahl.setItems(ServerCommunication.getSitzungen());
+        sitzungsAuswahlPopup.getDialogPane().setContent(listViewSitzungsAuswahl);
+        
+        // Es muss eine Sitzung ausgewählt werden
+        Node confirmButton = sitzungsAuswahlPopup.getDialogPane().lookupButton(loginButtonType);
+        confirmButton.setDisable(true);
+        listViewSitzungsAuswahl.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            ServerCommunication.selectedSitzung = newValue;
+            confirmButton.setDisable(false);
+            
+        });
+        
+        listViewSitzungsAuswahl.requestFocus();
+        sitzungsAuswahlPopup.showAndWait();
+        
+        //Instant Login für Vorstand
+        loginUserWithQR(vorstandID);
     }
 }
