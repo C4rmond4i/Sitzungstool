@@ -9,6 +9,7 @@ import com.google.zxing.Result;
 import com.google.zxing.client.j2se.BufferedImageLuminanceSource;
 import com.google.zxing.common.HybridBinarizer;
 import com.integra.sitzungstool.general.ServerCommunication;
+import com.integra.sitzungstool.model.DatabaseInterface;
 import com.integra.sitzungstool.model.Integraner;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
@@ -90,12 +91,10 @@ public class MainViewController
     private TimerTask task;
     
     //Data
-    private ArrayList<Integraner> integraner;
 
     public void init()
     {			
-        //Integranet Daten ziehen
-        integraner = ServerCommunication.getIntegraner();
+        DatabaseInterface.createTables();
         
         createAnimations();
         createTasks();
@@ -252,14 +251,9 @@ public class MainViewController
 
     public void loginUserWithQR(String id)
     {
-        boolean foundUser = false;
-        
-        for(Integraner i : integraner)
-        {
+        Integraner i = DatabaseInterface.loginIntegraner(id);
             if(i.getBenutzerkennung().equals(id))
-            {
-                foundUser = true;
-                
+            {   
                 if(i.isAnwesend())
                 {
                     labelName.setTextFill(Color.rgb(210, 39, 30));
@@ -279,8 +273,7 @@ public class MainViewController
                 else
                 {
                     labelName.setText("Hallo, " + i.getName().substring(0, i.getName().indexOf(" ")) + "!");
-                    Image profilePicture = ServerCommunication.getProfilePicture(i.getBenutzerkennung());
-                    imageViewPicture.setImage(profilePicture);
+                    imageViewPicture.setImage(i.getBild());
                     textFieldKennung.setText("");
                     i.setAnwesend(true);
 
@@ -301,10 +294,7 @@ public class MainViewController
                     createTasks();
                     new Timer().schedule(task, 5000);
                 }
-            }
-        }
-        
-        if(foundUser == false)
+            } else
         {
             labelFalscheKennung.setText("Falsche Kennung");
             textFieldKennung.selectAll();
@@ -397,7 +387,7 @@ public class MainViewController
                     event.consume();
                 } else
                 {
-                    integraner = ServerCommunication.getIntegraner();
+                    DatabaseInterface.updateIntegraner(ServerCommunication.getIntegraner());
                 }
         });
         

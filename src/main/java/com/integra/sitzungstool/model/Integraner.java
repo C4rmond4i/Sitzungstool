@@ -9,7 +9,13 @@ public class Integraner
 	private String name;
 	private String ressort;
         private String stab;
+        private String bildHash;
 	private boolean anwesend;
+        
+        public Integraner(String benutzerkennung) {
+            this.benutzerkennung = benutzerkennung;
+            this.anwesend = false;
+        }
 	
 	public Integraner(String benutzerkennung, Image bild, String name, String ressort, String stab)
 	{
@@ -78,7 +84,14 @@ public class Integraner
 		this.stab = stab;
 	}
 
-	
+	public String getBildHash() {
+                return this.bildHash;
+        }
+        
+        public void setBildHash(String bildHash) {
+                this.bildHash = bildHash;
+        }
+        
 	public boolean isAnwesend()
 	{
 		return this.anwesend;

@@ -4,13 +4,10 @@ import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 import com.integra.sitzungstool.model.Integraner;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Base64;
 import java.util.List;
-import javafx.scene.image.Image;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -19,11 +16,19 @@ public class ServerCommunication {
    private static OkHttpClient client;
    
    public static boolean vorstandLogin(String username, String password) {
-       ServerCommunication.client = new OkHttpClient.Builder()
-               .addInterceptor(new AuthenticationInterceptor(username, password))
-               .build();
-       ArrayList<Integraner> integraner = getIntegraner();
-       return integraner.size() > 0;
+       try {
+            ServerCommunication.client = new OkHttpClient.Builder()
+                    .addInterceptor(new AuthenticationInterceptor(username, password))
+                    .build();
+            Request request = new Request.Builder()
+                    .url("https://integranet-dev.integra-ev.de/module/sitzungsanwesenheit/api/anwesenheit-api.php?method=login")
+                    .build();
+            Response response = ServerCommunication.client.newCall(request).execute();
+            return response.body().string().equals("Verified");
+       } catch (IOException e) {
+           System.out.println(e.getMessage());
+           return false;
+       }
    }
    
    public static ArrayList<Integraner> getIntegraner() {
@@ -45,7 +50,7 @@ public class ServerCommunication {
        return new ArrayList<>();
    }
    
-   public static Image getProfilePicture(String benutzerkennung) {
+   public static String getProfilePicture(String benutzerkennung) {
        if (ServerCommunication.client != null) {
            try {
                 Request request = new Request.Builder()
@@ -54,9 +59,11 @@ public class ServerCommunication {
                 Response response = ServerCommunication.client.newCall(request).execute();
                 String body = response.body().string();
                 if (body.startsWith("data:image/")) {
-                    String imageString = body.split(",")[1];
-                    byte[] encodedBytes = Base64.getDecoder().decode(imageString.getBytes());
-                    return new Image(new ByteArrayInputStream(encodedBytes));
+                    String[] imageStrings = body.split(",");
+                    if (imageStrings.length > 1) {
+                        return imageStrings[1];
+                    }
+                    return null;
                 }
                 System.out.println(body);
                 return null;
