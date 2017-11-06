@@ -456,8 +456,8 @@ public class MainViewController
         sitzungsAuswahlPopup.setHeaderText("Bitte wählen Sie eine Veranstaltung aus.");
         
         // Set the button types.
-        ButtonType loginButtonType = new ButtonType("OK", ButtonData.OK_DONE);
-        sitzungsAuswahlPopup.getDialogPane().getButtonTypes().addAll(loginButtonType, ButtonType.CANCEL);
+        ButtonType confirmButtonType = new ButtonType("OK", ButtonData.OK_DONE);
+        sitzungsAuswahlPopup.getDialogPane().getButtonTypes().addAll(confirmButtonType, ButtonType.CANCEL);
         
         //ListView erstellen und Daten laden
         ListView<Sitzung> listViewSitzungsAuswahl = new ListView();
@@ -465,18 +465,27 @@ public class MainViewController
         sitzungsAuswahlPopup.getDialogPane().setContent(listViewSitzungsAuswahl);
         
         // Es muss eine Sitzung ausgewählt werden
-        Node confirmButton = sitzungsAuswahlPopup.getDialogPane().lookupButton(loginButtonType);
+        Node confirmButton = sitzungsAuswahlPopup.getDialogPane().lookupButton(confirmButtonType);
         confirmButton.setDisable(true);
+        
+        //Enter Hotkey
+        Button buttonConfirmButton = (Button) confirmButton;
+        buttonConfirmButton.setDefaultButton(true);
+        
         listViewSitzungsAuswahl.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             ServerCommunication.selectedSitzung = newValue;
-            confirmButton.setDisable(false);
-            
+            confirmButton.setDisable(false);   
+        });
+        
+        confirmButton.addEventFilter(ActionEvent.ACTION, (ActionEvent event) ->
+        {
+            //Instant Login für Vorstand
+            loginUserWithQR(vorstandID);
         });
         
         listViewSitzungsAuswahl.requestFocus();
         sitzungsAuswahlPopup.showAndWait();
         
-        //Instant Login für Vorstand
-        loginUserWithQR(vorstandID);
+
     }
 }
