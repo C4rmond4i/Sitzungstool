@@ -11,6 +11,7 @@ import com.google.zxing.common.HybridBinarizer;
 import com.integra.sitzungstool.general.ServerCommunication;
 import com.integra.sitzungstool.model.DatabaseInterface;
 import com.integra.sitzungstool.model.Integraner;
+import com.integra.sitzungstool.model.Sitzung;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Timer;
@@ -282,12 +283,45 @@ public class MainViewController
                     switch(i.getRessort())
                     {
                         case "ressort-it":      listViewIT.getItems().add(i);
-                                        labelIT.setText("Ressort IT (" + listViewIT.getItems().size() + ")");
-                                        break;
-                    }
+                                                labelIT.setText("Ressort IT (" + listViewIT.getItems().size() + ")");
+                                                break;
+                        case "ressort-per":     listViewPersonal.getItems().add(i);
+                                                labelPersonal.setText("Ressort Personal (" + listViewPersonal.getItems().size() + ")");
+                                                break;
+                        case "ressort-aq":      listViewAkquise.getItems().add(i);
+                                                labelAkquise.setText("Ressort Akquise (" + listViewAkquise.getItems().size() + ")");
+                                                break;
+                        case "ressort-pr":      listViewPR.getItems().add(i);
+                                                labelPR.setText("Ressort PR (" + listViewPR.getItems().size() + ")");
+                                                break;
+                        case "ressort-qm":      listViewQM.getItems().add(i);
+                                                labelQM.setText("Ressort QM (" + listViewQM.getItems().size() + ")");
+                                                break;
+                        case "keins":
+                            
+                                switch(i.getStab())
+                                {
+                                    case "stab-1v":     listViewVorstand1.getItems().add(i);
+                                                        labelVorstand1.setText("1. Vorstand & Stab (" + listViewVorstand1.getItems().size() + ")");
+                                                        break;
+                                    case "stab-2v":     listViewVorstand2.getItems().add(i);
+                                                        labelVorstand2.setText("2. Vorstand & Stab (" + listViewVorstand2.getItems().size() + ")");
+                                                        break;
+                                    case "stab-3v":     listViewVorstand3.getItems().add(i);
+                                                        labelVorstand3.setText("3. Vorstand & Stab (" + listViewVorstand3.getItems().size() + ")");
+                                                        break;
+                                    case "keiner":      listViewWeitere.getItems().add(i);
+                                                        labelWeitere.setText("Weitere (" + listViewWeitere.getItems().size() + ")");
+                                                        break;
+                                }
+                                break;
 
+                    }
+                    
                     //Anzahl erhöhen
-                    labelAmount.setText("(" + listViewIT.getItems().size() + ")");
+                    int amount = Integer.valueOf(labelAmount.getText().replace("(", "").replace(")", ""));
+                    amount++;
+                    labelAmount.setText("(" + amount + ")");
                     
                     
                     task.cancel();
@@ -385,7 +419,8 @@ public class MainViewController
                     textFieldUsername.requestFocus();
                     labelWrongPassword.setText("Falsche Login Daten!");
                     event.consume();
-                } else
+                }
+                else
                 {
                     DatabaseInterface.updateIntegraner(ServerCommunication.getIntegraner());
                 }
@@ -398,5 +433,40 @@ public class MainViewController
 
         //Anzeigen
         loginPopup.showAndWait();
+        showSitzungsAuswahlDialog(textFieldUsername.getText().toLowerCase());
+    }
+    
+    public void showSitzungsAuswahlDialog(String vorstandID)
+    {
+        Dialog sitzungsAuswahlPopup = new Dialog<>();
+        sitzungsAuswahlPopup.getDialogPane().setPadding(new Insets(5,5,5,5));
+        sitzungsAuswahlPopup.setTitle("Sitzungsauswahl");
+        sitzungsAuswahlPopup.initModality(Modality.APPLICATION_MODAL);
+        sitzungsAuswahlPopup.initOwner(labelName.getScene().getWindow());
+        sitzungsAuswahlPopup.setHeaderText("Bitte wählen Sie eine Veranstaltung aus.");
+        
+        // Set the button types.
+        ButtonType loginButtonType = new ButtonType("OK", ButtonData.OK_DONE);
+        sitzungsAuswahlPopup.getDialogPane().getButtonTypes().addAll(loginButtonType, ButtonType.CANCEL);
+        
+        //ListView erstellen und Daten laden
+        ListView<Sitzung> listViewSitzungsAuswahl = new ListView();
+        listViewSitzungsAuswahl.setItems(ServerCommunication.getSitzungen());
+        sitzungsAuswahlPopup.getDialogPane().setContent(listViewSitzungsAuswahl);
+        
+        // Es muss eine Sitzung ausgewählt werden
+        Node confirmButton = sitzungsAuswahlPopup.getDialogPane().lookupButton(loginButtonType);
+        confirmButton.setDisable(true);
+        listViewSitzungsAuswahl.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            ServerCommunication.selectedSitzung = newValue;
+            confirmButton.setDisable(false);
+            
+        });
+        
+        listViewSitzungsAuswahl.requestFocus();
+        sitzungsAuswahlPopup.showAndWait();
+        
+        //Instant Login für Vorstand
+        loginUserWithQR(vorstandID);
     }
 }
