@@ -13,7 +13,6 @@ import com.integra.sitzungstool.model.DatabaseInterface;
 import com.integra.sitzungstool.model.Integraner;
 import com.integra.sitzungstool.model.Sitzung;
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 import javafx.animation.Interpolator;

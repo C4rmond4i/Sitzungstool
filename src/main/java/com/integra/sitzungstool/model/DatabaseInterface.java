@@ -78,7 +78,6 @@ public class DatabaseInterface {
             statement.setString(1, integraner.getBenutzerkennung());
             ResultSet rs = statement.executeQuery();
             if (rs.next()) {
-                System.out.println(rs.getClob("bild") == null);
                 if (!(rs.getString("bild_hash").equals(integraner.getBildHash())) || rs.getClob("bild") == null) {
                     DatabaseInterface.saveImage(integraner.getBenutzerkennung());
                 }
