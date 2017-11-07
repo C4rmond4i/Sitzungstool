@@ -1,5 +1,8 @@
 package com.integra.sitzungstool.model;
 
+import java.io.UnsupportedEncodingException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.scene.image.Image;
 
 public class Integraner
@@ -56,7 +59,12 @@ public class Integraner
 
 	public String getName()
 	{
-		return this.name.replace("+", " ");
+            try {
+                return java.net.URLDecoder.decode(this.name, "UTF-8");
+            } catch (UnsupportedEncodingException ex) {
+                System.out.println(ex.getMessage());
+                return this.name.replace("+", " ");
+            }
 	}
 
 	public void setName(String name)
