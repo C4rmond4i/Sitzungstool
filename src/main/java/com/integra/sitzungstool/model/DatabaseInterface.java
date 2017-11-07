@@ -5,7 +5,6 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringWriter;
-import java.io.Writer;
 import java.sql.Clob;
 import java.sql.Connection;
 import java.sql.DriverManager;
