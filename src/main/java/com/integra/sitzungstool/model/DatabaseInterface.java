@@ -95,7 +95,6 @@ public class DatabaseInterface {
     
     public static void saveImage(String benutzerkennung) {
         try {
-            System.out.println(benutzerkennung);
             String imageString = ServerCommunication.getProfilePicture(benutzerkennung);
             if (imageString != null) {
                 Clob imageClob = DatabaseInterface.conn.createClob();
