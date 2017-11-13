@@ -1,8 +1,6 @@
 package com.integra.sitzungstool.model;
 
 import java.io.UnsupportedEncodingException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javafx.scene.image.Image;
 
 public class Integraner
