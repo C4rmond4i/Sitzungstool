@@ -7,11 +7,13 @@ public class Sitzung
 {
     private String datumString;
     private String id;
+    private String semester;
     private GregorianCalendar datum;
     
-    public Sitzung(String id, String datumString)
+    public Sitzung(String id, String datumString, String semester)
     {
         this.datumString = datumString;
+        this.semester = semester;
         this.id = id;
         String[] datumStringTeile = datumString.split("-");
         int[] datumsTeile = new int[3];
@@ -23,6 +25,14 @@ public class Sitzung
     
     public String getId() {
         return this.id;
+    }
+    
+    public String getDatumString() {
+        return this.datumString;
+    }
+    
+    public String getSemester() {
+        return this.semester;
     }
     
     @Override

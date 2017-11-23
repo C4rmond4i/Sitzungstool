@@ -8,8 +8,7 @@ import com.google.zxing.NotFoundException;
 import com.google.zxing.Result;
 import com.google.zxing.client.j2se.BufferedImageLuminanceSource;
 import com.google.zxing.common.HybridBinarizer;
-import com.integra.sitzungstool.general.ServerCommunication;
-import com.integra.sitzungstool.model.DatabaseInterface;
+import com.integra.sitzungstool.general.DataInterface;
 import com.integra.sitzungstool.model.Integraner;
 import com.integra.sitzungstool.model.Sitzung;
 import java.awt.image.BufferedImage;
@@ -46,39 +45,65 @@ import javafx.scene.shape.VLineTo;
 import javafx.stage.Modality;
 import javafx.util.Duration;
 
-public class MainViewController
-{
+public class MainViewController {
+
     //GUI
-    @FXML private Label labelName;
-    @FXML private ImageView imageViewPicture;
+    @FXML
+    private Label labelName;
+    @FXML
+    private ImageView imageViewPicture;
 
-    @FXML private ImageView imageViewWebcam;
-    @FXML private Rectangle rectangleScanner;
-    
-    @FXML private TextField textFieldKennung;
-    @FXML private Label labelFalscheKennung;
-    @FXML private Button  buttonEnter;
+    @FXML
+    private ImageView imageViewWebcam;
+    @FXML
+    private Rectangle rectangleScanner;
 
-    @FXML private ListView<Integraner> listViewVorstand1;
-    @FXML private ListView<Integraner> listViewVorstand2;
-    @FXML private ListView<Integraner> listViewVorstand3;
-    @FXML private ListView<Integraner> listViewAkquise;
-    @FXML private ListView<Integraner> listViewIT;
-    @FXML private ListView<Integraner> listViewPersonal;
-    @FXML private ListView<Integraner> listViewPR;
-    @FXML private ListView<Integraner> listViewQM;
-    @FXML private ListView<Integraner> listViewWeitere;
+    @FXML
+    private TextField textFieldKennung;
+    @FXML
+    private Label labelFalscheKennung;
+    @FXML
+    private Button buttonEnter;
 
-    @FXML private Label labelAmount;
-    @FXML private Label labelVorstand1;
-    @FXML private Label labelVorstand2;
-    @FXML private Label labelVorstand3;
-    @FXML private Label labelAkquise;
-    @FXML private Label labelIT;
-    @FXML private Label labelPersonal;
-    @FXML private Label labelPR;
-    @FXML private Label labelQM;
-    @FXML private Label labelWeitere;
+    @FXML
+    private ListView<Integraner> listViewVorstand1;
+    @FXML
+    private ListView<Integraner> listViewVorstand2;
+    @FXML
+    private ListView<Integraner> listViewVorstand3;
+    @FXML
+    private ListView<Integraner> listViewAkquise;
+    @FXML
+    private ListView<Integraner> listViewIT;
+    @FXML
+    private ListView<Integraner> listViewPersonal;
+    @FXML
+    private ListView<Integraner> listViewPR;
+    @FXML
+    private ListView<Integraner> listViewQM;
+    @FXML
+    private ListView<Integraner> listViewWeitere;
+
+    @FXML
+    private Label labelAmount;
+    @FXML
+    private Label labelVorstand1;
+    @FXML
+    private Label labelVorstand2;
+    @FXML
+    private Label labelVorstand3;
+    @FXML
+    private Label labelAkquise;
+    @FXML
+    private Label labelIT;
+    @FXML
+    private Label labelPersonal;
+    @FXML
+    private Label labelPR;
+    @FXML
+    private Label labelQM;
+    @FXML
+    private Label labelWeitere;
 
     //Logik
     private BufferedImage grabbedImage;
@@ -87,134 +112,106 @@ public class MainViewController
     private BinaryBitmap bitmap;
     private Result result;
     private RotateTransition rotateTransition;
-    
-    private TimerTask task;
-    
-    //Data
 
-    public void init()
-    {			
-        DatabaseInterface.createTables();
-        
+    private TimerTask task;
+
+    //Data
+    public void init() {
+        DataInterface.init();
+
         createAnimations();
         createTasks();
-             
-        //Webcam inistalisiren
-        Task<Void> webCamIntilizer = new Task<Void>()
-        {
-            @Override
-            protected Void call() throws Exception
-            {
 
-                if(webCam == null)
-                {
+        //Webcam inistalisiren
+        Task<Void> webCamIntilizer = new Task<Void>() {
+            @Override
+            protected Void call() throws Exception {
+
+                if (webCam == null) {
                     webCam = Webcam.getDefault();
                     webCam.setViewSize(WebcamResolution.VGA.getSize());
                     webCam.open();
-                }
-                else
-                {
+                } else {
                     closeCamera();
                     webCam = Webcam.getDefault();
                     webCam.open();
-                }				
+                }
                 startWebCamStream();
                 return null;
             }
 
         };
         new Thread(webCamIntilizer).start();
-        
+
         buttonEnter.setDisable(true);
         labelFalscheKennung.setTextFill(Color.rgb(210, 39, 30));
         textFieldKennung.textProperty().addListener((observable, oldValue, newValue) -> {
             buttonEnter.setDisable(newValue.isEmpty());
             labelFalscheKennung.setText("");
         });
-        
+
         textFieldKennung.requestFocus();
     }
 
-    public void startWebCamStream()
-    {
-        Task<Void> taskVideoUpdate = new Task<Void>()
-        {
+    public void startWebCamStream() {
+        Task<Void> taskVideoUpdate = new Task<Void>() {
             @Override
-            protected Void call() throws Exception
-            {
-                while (true)
-                {
-                    if((grabbedImage = webCam.getImage()) != null)
-                    {
-                            try
-                            {
-                                Thread.sleep(65); //15 Frames per Second
-                            }
-                            catch (Exception e)
-                            {
-                                e.printStackTrace();
-                            }
-
-
-                            Platform.runLater(() -> {
-                                //Video updaten
-                                imageProperty.set(SwingFXUtils.toFXImage(grabbedImage, null));
-                            });
-
-                            grabbedImage.flush();
-                        }
-                }
-            }};
-            Thread threadVideoUpdate = new Thread(taskVideoUpdate);
-            threadVideoUpdate.setDaemon(true);
-            threadVideoUpdate.start();
-            imageViewWebcam.imageProperty().bind(imageProperty);
-
-
-            Task<Void> taskQRScanner = new Task<Void>()
-            {
-                @Override
-                protected Void call() throws Exception
-                {
-                    while (true)
-                    {	
-                        try
-                        {
-                            Thread.sleep(500); //Looking for QR every 500 milliseconds
-                        }
-
-                        catch (Exception e)
-                        {
+            protected Void call() throws Exception {
+                while (true) {
+                    if ((grabbedImage = webCam.getImage()) != null) {
+                        try {
+                            Thread.sleep(65); //15 Frames per Second
+                        } catch (Exception e) {
                             e.printStackTrace();
                         }
 
-                        if((grabbedImage = webCam.getImage()) != null)
-                        {
-                            //Nach QR Suchen
-                            bitmap = new BinaryBitmap(new HybridBinarizer(new BufferedImageLuminanceSource(grabbedImage)));
-                            Platform.runLater(() -> {
-                                try
-                                {
-                                    result = new MultiFormatReader().decode(bitmap);
-                                    loginUserWithQR(result.getText());
-                                    result = null;
-                                }
-                                catch (NotFoundException e)
-                                {
-                                    // fall thru, it means there is no QR code in image
-                                }
-                            });
-                        }
+                        Platform.runLater(() -> {
+                            //Video updaten
+                            imageProperty.set(SwingFXUtils.toFXImage(grabbedImage, null));
+                        });
+
+                        grabbedImage.flush();
                     }
                 }
-            };
-            Thread threadQRScanner = new Thread(taskQRScanner);
-            threadQRScanner.setDaemon(true);
-            threadQRScanner.start();	
+            }
+        };
+        Thread threadVideoUpdate = new Thread(taskVideoUpdate);
+        threadVideoUpdate.setDaemon(true);
+        threadVideoUpdate.start();
+        imageViewWebcam.imageProperty().bind(imageProperty);
+
+        Task<Void> taskQRScanner = new Task<Void>() {
+            @Override
+            protected Void call() throws Exception {
+                while (true) {
+                    try {
+                        Thread.sleep(500); //Looking for QR every 500 milliseconds
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+                    if ((grabbedImage = webCam.getImage()) != null) {
+                        //Nach QR Suchen
+                        bitmap = new BinaryBitmap(new HybridBinarizer(new BufferedImageLuminanceSource(grabbedImage)));
+                        Platform.runLater(() -> {
+                            try {
+                                result = new MultiFormatReader().decode(bitmap);
+                                loginUserWithQR(result.getText());
+                                result = null;
+                            } catch (NotFoundException e) {
+                                // fall thru, it means there is no QR code in image
+                            }
+                        });
+                    }
+                }
+            }
+        };
+        Thread threadQRScanner = new Thread(taskQRScanner);
+        threadQRScanner.setDaemon(true);
+        threadQRScanner.start();
     }
-    
-    private void createAnimations()
-    {
+
+    private void createAnimations() {
         //Spin Animation
         rotateTransition = new RotateTransition();
         rotateTransition.setNode(imageViewPicture);
@@ -222,13 +219,13 @@ public class MainViewController
         rotateTransition.setToAngle(1080);
         rotateTransition.setInterpolator(Interpolator.EASE_BOTH);
         rotateTransition.setDuration(Duration.millis(1000));
-        
+
         //Scanner Animation
         PathTransition pathTransition = new PathTransition();
 
         Path path = new Path();
-        path.getElements().add (new MoveTo (100, 5));
-        path.getElements().add (new VLineTo (180));
+        path.getElements().add(new MoveTo(100, 5));
+        path.getElements().add(new VLineTo(180));
         path.setSmooth(true);
 
         pathTransition.setDuration(Duration.millis(1000));
@@ -241,108 +238,102 @@ public class MainViewController
         pathTransition.play();
     }
 
-    private void closeCamera()
-    {
-        if(webCam != null)
-        {
+    private void closeCamera() {
+        if (webCam != null) {
             webCam.close();
         }
     }
 
-    public void loginUserWithQR(String id)
-    {
-        Integraner i = DatabaseInterface.loginIntegraner(id);
-            if(i.getBenutzerkennung().equals(id))
-            {   
-                if(i.isAnwesend())
-                {
-                    labelName.setTextFill(Color.rgb(210, 39, 30));
-                    labelName.setText("Bereits eingeloggt");
-                    textFieldKennung.selectAll();
+    public void loginUserWithQR(String id) {
+        Integraner i = DataInterface.integranerLogin(id);
+        if (i.getBenutzerkennung().equals(id)) {
+            if (i.isAnwesend()) {
+                labelName.setTextFill(Color.rgb(210, 39, 30));
+                labelName.setText("Bereits eingeloggt");
+                textFieldKennung.selectAll();
 
-                    new java.util.Timer().schedule(new java.util.TimerTask() {
-                        @Override
-                        public void run() {
-                            Platform.runLater(() -> {
-                                labelName.setText("");
-                                labelName.setTextFill(Color.BLACK);
-                            });
-                        }
-                    }, 3000);
-                }
-                else
-                {
-                    labelName.setText("Hallo, " + i.getName().substring(0, i.getName().indexOf(" ")) + "!");
-                    imageViewPicture.setImage(i.getBild());
-                    textFieldKennung.setText("");
-                    i.setAnwesend(true);
-
-
-                    //In Liste eintragen
-                    switch(i.getRessort())
-                    {
-                        case "ressort-it":      listViewIT.getItems().add(i);
-                                                labelIT.setText("Ressort IT (" + listViewIT.getItems().size() + ")");
-                                                break;
-                        case "ressort-per":     listViewPersonal.getItems().add(i);
-                                                labelPersonal.setText("Ressort Personal (" + listViewPersonal.getItems().size() + ")");
-                                                break;
-                        case "ressort-aq":      listViewAkquise.getItems().add(i);
-                                                labelAkquise.setText("Ressort Akquise (" + listViewAkquise.getItems().size() + ")");
-                                                break;
-                        case "ressort-pr":      listViewPR.getItems().add(i);
-                                                labelPR.setText("Ressort PR (" + listViewPR.getItems().size() + ")");
-                                                break;
-                        case "ressort-qm":      listViewQM.getItems().add(i);
-                                                labelQM.setText("Ressort QM (" + listViewQM.getItems().size() + ")");
-                                                break;
-                        case "keins":
-                            
-                                switch(i.getStab())
-                                {
-                                    case "stab-1v":     listViewVorstand1.getItems().add(i);
-                                                        labelVorstand1.setText("1. Vorstand & Stab (" + listViewVorstand1.getItems().size() + ")");
-                                                        break;
-                                    case "stab-2v":     listViewVorstand2.getItems().add(i);
-                                                        labelVorstand2.setText("2. Vorstand & Stab (" + listViewVorstand2.getItems().size() + ")");
-                                                        break;
-                                    case "stab-3v":     listViewVorstand3.getItems().add(i);
-                                                        labelVorstand3.setText("3. Vorstand & Stab (" + listViewVorstand3.getItems().size() + ")");
-                                                        break;
-                                    case "keiner":      listViewWeitere.getItems().add(i);
-                                                        labelWeitere.setText("Weitere (" + listViewWeitere.getItems().size() + ")");
-                                                        break;
-                                }
-                                break;
-
+                new java.util.Timer().schedule(new java.util.TimerTask() {
+                    @Override
+                    public void run() {
+                        Platform.runLater(() -> {
+                            labelName.setText("");
+                            labelName.setTextFill(Color.BLACK);
+                        });
                     }
-                    
-                    //Anzahl erhöhen
-                    int amount = Integer.valueOf(labelAmount.getText().replace("(", "").replace(")", ""));
-                    amount++;
-                    labelAmount.setText("(" + amount + ")");
-                    
-                    
-                    task.cancel();
-                    createTasks();
-                    new Timer().schedule(task, 5000);
+                }, 3000);
+            } else {
+                labelName.setText("Hallo, " + i.getName().substring(0, i.getName().indexOf(" ")) + "!");
+                imageViewPicture.setImage(i.getBild());
+                textFieldKennung.setText("");
+                i.setAnwesend(true);
+
+                //In Liste eintragen
+                switch (i.getRessort()) {
+                    case "ressort-it":
+                        listViewIT.getItems().add(i);
+                        labelIT.setText("Ressort IT (" + listViewIT.getItems().size() + ")");
+                        break;
+                    case "ressort-per":
+                        listViewPersonal.getItems().add(i);
+                        labelPersonal.setText("Ressort Personal (" + listViewPersonal.getItems().size() + ")");
+                        break;
+                    case "ressort-aq":
+                        listViewAkquise.getItems().add(i);
+                        labelAkquise.setText("Ressort Akquise (" + listViewAkquise.getItems().size() + ")");
+                        break;
+                    case "ressort-pr":
+                        listViewPR.getItems().add(i);
+                        labelPR.setText("Ressort PR (" + listViewPR.getItems().size() + ")");
+                        break;
+                    case "ressort-qm":
+                        listViewQM.getItems().add(i);
+                        labelQM.setText("Ressort QM (" + listViewQM.getItems().size() + ")");
+                        break;
+                    case "keins":
+
+                        switch (i.getStab()) {
+                            case "stab-1v":
+                                listViewVorstand1.getItems().add(i);
+                                labelVorstand1.setText("1. Vorstand & Stab (" + listViewVorstand1.getItems().size() + ")");
+                                break;
+                            case "stab-2v":
+                                listViewVorstand2.getItems().add(i);
+                                labelVorstand2.setText("2. Vorstand & Stab (" + listViewVorstand2.getItems().size() + ")");
+                                break;
+                            case "stab-3v":
+                                listViewVorstand3.getItems().add(i);
+                                labelVorstand3.setText("3. Vorstand & Stab (" + listViewVorstand3.getItems().size() + ")");
+                                break;
+                            case "keiner":
+                                listViewWeitere.getItems().add(i);
+                                labelWeitere.setText("Weitere (" + listViewWeitere.getItems().size() + ")");
+                                break;
+                        }
+                        break;
+
                 }
-            } else
-        {
+
+                //Anzahl erhöhen
+                int amount = Integer.valueOf(labelAmount.getText().replace("(", "").replace(")", ""));
+                amount++;
+                labelAmount.setText("(" + amount + ")");
+
+                task.cancel();
+                createTasks();
+                new Timer().schedule(task, 5000);
+            }
+        } else {
             labelFalscheKennung.setText("Falsche Kennung");
             textFieldKennung.selectAll();
         }
     }
-    
-    public void createTasks()
-    {
-        task = new TimerTask()
-        {
+
+    public void createTasks() {
+        task = new TimerTask() {
             @Override
-            public void run()
-            {
-                Platform.runLater(() ->
-                {
+            public void run() {
+                Platform.runLater(()
+                        -> {
                     labelName.setText("");
                     imageViewPicture.setImage(new Image("/images/imageIntegraLogo.png"));
                     rotateTransition.play();
@@ -350,19 +341,16 @@ public class MainViewController
             }
         };
     }
-    
-    public void loginUserWithTextField()
-    {
+
+    public void loginUserWithTextField() {
         loginUserWithQR(textFieldKennung.getText().toLowerCase());
     }
 
-    public void clearTextField()
-    {
+    public void clearTextField() {
         textFieldKennung.clear();
     }
 
-    public void showLoginPopup()
-    {
+    public void showLoginPopup() {
         // Create the custom dialog.
         Dialog loginPopup = new Dialog<>();
         loginPopup.setTitle("Login");
@@ -395,7 +383,6 @@ public class MainViewController
         grid.add(passwordFieldPassword, 1, 1);
         grid.add(labelWrongPassword, 0, 2);
 
-        
         // Beide Felder müssen gefüllt sein
         Node loginButton = loginPopup.getDialogPane().lookupButton(loginButtonType);
         loginButton.setDisable(true);
@@ -408,63 +395,59 @@ public class MainViewController
             loginButton.setDisable(newValue.isEmpty() || textFieldUsername.getText().isEmpty());
             labelWrongPassword.setText("");
         });
-        
+
         //Prüfe Login Daten
-        loginButton.addEventFilter(ActionEvent.ACTION, (ActionEvent event) ->
-        {
-                if (!ServerCommunication.vorstandLogin(textFieldUsername.getText(), passwordFieldPassword.getText()))
-                {
-                    passwordFieldPassword.clear();
-                    textFieldUsername.requestFocus();
-                    labelWrongPassword.setText("Falsche Login Daten!");
-                    event.consume();
-                }
-                else
-                {
-                    DatabaseInterface.updateIntegraner(ServerCommunication.getIntegraner());
-                }
+        loginButton.addEventFilter(ActionEvent.ACTION, (ActionEvent event)
+                -> {
+            if (!DataInterface.vorstandLogin(textFieldUsername.getText(), passwordFieldPassword.getText())) {
+                passwordFieldPassword.clear();
+                textFieldUsername.requestFocus();
+                labelWrongPassword.setText("Falsche Login Daten!");
+                event.consume();
+            } else {
+                DataInterface.getIntegranetDataWithLoadingProcess();
+            }
         });
-        
+
         //Setze Grid
         loginPopup.getDialogPane().setContent(grid);
-        
+
         textFieldUsername.requestFocus();
 
         //Anzeigen
         loginPopup.showAndWait();
         showSitzungsAuswahlDialog(textFieldUsername.getText().toLowerCase());
     }
-    
-    public void showSitzungsAuswahlDialog(String vorstandID)
-    {
+
+    public void showSitzungsAuswahlDialog(String vorstandID) {
         Dialog sitzungsAuswahlPopup = new Dialog<>();
-        sitzungsAuswahlPopup.getDialogPane().setPadding(new Insets(5,5,5,5));
+        sitzungsAuswahlPopup.getDialogPane().setPadding(new Insets(5, 5, 5, 5));
         sitzungsAuswahlPopup.setTitle("Sitzungsauswahl");
         sitzungsAuswahlPopup.initModality(Modality.APPLICATION_MODAL);
         sitzungsAuswahlPopup.initOwner(labelName.getScene().getWindow());
         sitzungsAuswahlPopup.setHeaderText("Bitte wählen Sie eine Veranstaltung aus.");
-        
+
         // Set the button types.
         ButtonType loginButtonType = new ButtonType("OK", ButtonData.OK_DONE);
         sitzungsAuswahlPopup.getDialogPane().getButtonTypes().addAll(loginButtonType, ButtonType.CANCEL);
-        
+
         //ListView erstellen und Daten laden
         ListView<Sitzung> listViewSitzungsAuswahl = new ListView();
-        listViewSitzungsAuswahl.setItems(ServerCommunication.getSitzungen());
+        listViewSitzungsAuswahl.setItems(DataInterface.getSitzungen());
         sitzungsAuswahlPopup.getDialogPane().setContent(listViewSitzungsAuswahl);
-        
+
         // Es muss eine Sitzung ausgewählt werden
         Node confirmButton = sitzungsAuswahlPopup.getDialogPane().lookupButton(loginButtonType);
         confirmButton.setDisable(true);
         listViewSitzungsAuswahl.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            ServerCommunication.selectedSitzung = newValue;
+            DataInterface.setSitzung(newValue);
             confirmButton.setDisable(false);
-            
+
         });
-        
+
         listViewSitzungsAuswahl.requestFocus();
         sitzungsAuswahlPopup.showAndWait();
-        
+
         //Instant Login für Vorstand
         loginUserWithQR(vorstandID);
     }
