@@ -15,6 +15,7 @@ public class SitzungDeserializer implements JsonDeserializer<Sitzung> {
         JsonObject jsonObject = json.getAsJsonObject();
         JsonElement jsonID = jsonObject.get("id");
         JsonElement jsonDatumString = jsonObject.get("datumString");
-        return new Sitzung(jsonID.getAsString(), jsonDatumString.getAsString());
+        JsonElement jsonSemester = jsonObject.get("semester");
+        return new Sitzung(jsonID.getAsString(), jsonDatumString.getAsString(), jsonSemester.getAsString());
     }
 }
