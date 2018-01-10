@@ -9,6 +9,7 @@ import com.google.zxing.Result;
 import com.google.zxing.client.j2se.BufferedImageLuminanceSource;
 import com.google.zxing.common.HybridBinarizer;
 import com.integra.sitzungstool.general.DataInterface;
+import com.integra.sitzungstool.general.ErrorHandler;
 import com.integra.sitzungstool.model.Integraner;
 import com.integra.sitzungstool.model.Sitzung;
 import java.awt.image.BufferedImage;
@@ -88,24 +89,36 @@ public class MainViewController
     private final ObjectProperty<Image> imageProperty = new SimpleObjectProperty<>();
     private BinaryBitmap bitmap;
     private Result result;
+    
     private RotateTransition rotateTransition;
     private TimerTask taskResetImage;
 
     //Data
     public void init()
     {
-        //Erstellt lokal SQL Tabellen
-        DataInterface.init();
+        DataInterface.init(); //Erstellt lokal SQL Tabellen
+        createAnimations(); //Animationen erstellen
+        createTasks();  //Tasks erstellen
+        startWebCamStream(); //Webcam inistalisieren
+        
+        //GUI vorbereiten
+        buttonEnter.setDisable(true);
+        labelFalscheKennung.setTextFill(Color.rgb(210, 39, 30));
+        textFieldKennung.textProperty().addListener((observable, oldValue, newValue) -> {
+            buttonEnter.setDisable(newValue.isEmpty());
+            labelFalscheKennung.setText("");
+        });
+        textFieldKennung.requestFocus();
+    }
 
-        createAnimations();
-        createTasks();
-
-        //Webcam inistalisieren
+    public void startWebCamStream()
+    {
         Task<Void> webCamIntilizer = new Task<Void>()
         {
             @Override
             protected Void call() throws Exception
             {
+                //Open Webcam
                 if (webCam == null)
                 {
                     webCam = Webcam.getDefault();
@@ -114,104 +127,95 @@ public class MainViewController
                 }
                 else
                 {
-                    closeCamera();
+                    //Restart webcam
+                    if (webCam != null)
+                    {
+                        webCam.close();
+                    }
                     webCam = Webcam.getDefault();
+                    webCam.setViewSize(WebcamResolution.VGA.getSize());
                     webCam.open();
                 }
-                startWebCamStream();
+                
+                //Video Updater
+                Task<Void> taskVideoUpdate = new Task<Void>()
+                {
+                    @Override
+                    protected Void call() throws Exception
+                    {
+                        while (true)
+                        {
+                            if ((grabbedImage = webCam.getImage()) != null)
+                            {
+                                try
+                                {
+                                    Thread.sleep(65); //15 Frames per Second
+                                }
+                                catch (Exception e)
+                                {
+                                    ErrorHandler.showErrorPopup(e);
+                                }
+
+                                Platform.runLater(() -> {
+                                    //Video updaten
+                                    imageProperty.set(SwingFXUtils.toFXImage(grabbedImage, null));
+                                });
+
+                                grabbedImage.flush();
+                            }
+                        }
+                    }
+                };
+                Thread threadVideoUpdate = new Thread(taskVideoUpdate);
+                threadVideoUpdate.setDaemon(true);
+                threadVideoUpdate.start();
+                imageViewWebcam.imageProperty().bind(imageProperty);
+
+                //QR Code Searcher
+                Task<Void> taskQRScanner = new Task<Void>()
+                {
+                    @Override
+                    protected Void call() throws Exception
+                    {
+                        while (true)
+                        {
+                            try
+                            {
+                                Thread.sleep(250); //Looking for QR every 250 milliseconds
+                            }
+                            catch (Exception e)
+                            {
+                                ErrorHandler.showErrorPopup(e);
+                            }
+
+                            if ((grabbedImage = webCam.getImage()) != null)
+                            {
+                                //Nach QR Suchen
+                                bitmap = new BinaryBitmap(new HybridBinarizer(new BufferedImageLuminanceSource(grabbedImage)));
+                                Platform.runLater(() -> {
+                                    try
+                                    {
+                                        result = new MultiFormatReader().decode(bitmap);
+                                        loginUserWithQR(result.getText());
+                                        result = null;
+                                    }
+                                    catch (NotFoundException e)
+                                    {
+                                        // fall thru, it means there is no QR code in image
+                                    }
+                                });
+                            }
+                        }
+                    }
+                };
+                Thread threadQRScanner = new Thread(taskQRScanner);
+                threadQRScanner.setDaemon(true);
+                threadQRScanner.start();
+                
                 return null;
             }
         };
         new Thread(webCamIntilizer).start();
-
-        buttonEnter.setDisable(true);
-        labelFalscheKennung.setTextFill(Color.rgb(210, 39, 30));
-        textFieldKennung.textProperty().addListener((observable, oldValue, newValue) -> {
-            buttonEnter.setDisable(newValue.isEmpty());
-            labelFalscheKennung.setText("");
-        });
-        
-        
-        textFieldKennung.requestFocus();
-    }
-
-    public void startWebCamStream()
-    {
-        Task<Void> taskVideoUpdate = new Task<Void>()
-        {
-            @Override
-            protected Void call() throws Exception
-            {
-                while (true)
-                {
-                    if ((grabbedImage = webCam.getImage()) != null)
-                    {
-                        try
-                        {
-                            Thread.sleep(65); //15 Frames per Second
-                        }
-                        catch (Exception e)
-                        {
-                            e.printStackTrace();
-                        }
-
-                        Platform.runLater(() -> {
-                            //Video updaten
-                            imageProperty.set(SwingFXUtils.toFXImage(grabbedImage, null));
-                        });
-
-                        grabbedImage.flush();
-                    }
-                }
-            }
-        };
-        Thread threadVideoUpdate = new Thread(taskVideoUpdate);
-        threadVideoUpdate.setDaemon(true);
-        threadVideoUpdate.start();
-        imageViewWebcam.imageProperty().bind(imageProperty);
-
-        Task<Void> taskQRScanner = new Task<Void>()
-        {
-            @Override
-            protected Void call() throws Exception
-            {
-                while (true) {
-                    try
-                    {
-                        Thread.sleep(500); //Looking for QR every 500 milliseconds
-                    }
-                    catch (Exception e)
-                    {
-                        e.printStackTrace();
-                    }
-
-                    if ((grabbedImage = webCam.getImage()) != null) {
-                        //Nach QR Suchen
-                        bitmap = new BinaryBitmap(new HybridBinarizer(new BufferedImageLuminanceSource(grabbedImage)));
-                        Platform.runLater(() -> {
-                            try {
-                                result = new MultiFormatReader().decode(bitmap);
-                                loginUserWithQR(result.getText());
-                                result = null;
-                            } catch (NotFoundException e) {
-                                // fall thru, it means there is no QR code in image
-                            }
-                        });
-                    }
-                }
-            }
-        };
-        Thread threadQRScanner = new Thread(taskQRScanner);
-        threadQRScanner.setDaemon(true);
-        threadQRScanner.start();
-    }
-
-    private void closeCamera()
-    {
-        if (webCam != null)
-        {
-            webCam.close();
-        }
     }
     
     private void createAnimations() 
@@ -267,7 +271,7 @@ public class MainViewController
         
     public void loginUserWithQR(String id)
     {
-        Integraner i = DataInterface.integranerLogin(id);
+        Integraner i = DataInterface.integranerLogin(id); //Speichere in lokaler Datenbank
         if (i != null && i.getBenutzerkennung().equals(id))
         {
             if (i.isAnwesend())
