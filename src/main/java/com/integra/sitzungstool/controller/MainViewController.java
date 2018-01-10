@@ -488,7 +488,9 @@ public class MainViewController
 
         //Anzeigen
         loginPopup.showAndWait();
-        showSitzungsAuswahlDialog(textFieldUsername.getText().toLowerCase());
+        
+        saveLocalDbToServer(); //Speicher alles gespeicher wurde wenn Internet
+        showSitzungsAuswahlDialog(textFieldUsername.getText().toLowerCase()); //Öffne Sitzungsauswahl
     }
 
     public void showSitzungsAuswahlDialog(String vorstandID)
