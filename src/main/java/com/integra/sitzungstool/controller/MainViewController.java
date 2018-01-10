@@ -91,7 +91,7 @@ public class MainViewController
     private Result result;
     private RotateTransition rotateTransition;
     private TimerTask taskResetImage;
-    private DoubleProperty loadingProgress;
+    public DoubleProperty loadingProgress;
 
     //Data
     public void init()
@@ -406,6 +406,7 @@ public class MainViewController
         
         //Progess bar
         ProgressBar progressbar = new ProgressBar(0);
+        progressbar.setPrefWidth(200);
         progressbar.progressProperty().bind(loadingProgress);
         
         //Add everhing to grid
