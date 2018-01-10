@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 import com.integra.sitzungstool.model.Integraner;
+import com.integra.sitzungstool.model.NichtGespeicherteSitzung;
 import com.integra.sitzungstool.model.Sitzung;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -19,11 +20,6 @@ import okhttp3.Response;
 public class ServerCommunication
 {
    private static OkHttpClient client;
-   
-   public static void save()
-   {
-       System.out.println("Save!!!");
-   }
    
    public static ObservableList<Sitzung> getSitzungen()
    {
@@ -144,5 +140,15 @@ public class ServerCommunication
             }
         }
         return new ArrayList<>();
+    }
+    
+    public static boolean saveLocalDbToServer(ArrayList<NichtGespeicherteSitzung> nichtGespeicherteSitzungen) {
+        boolean hatAllesGeklappt = true;
+        for (NichtGespeicherteSitzung ngs : nichtGespeicherteSitzungen) {
+            Gson gson = new Gson();
+            String json = gson.toJson(ngs);
+            System.out.println(json);
+        }
+        return hatAllesGeklappt;
     }
 }

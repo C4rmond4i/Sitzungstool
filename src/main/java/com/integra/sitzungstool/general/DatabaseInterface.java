@@ -1,6 +1,7 @@
 package com.integra.sitzungstool.general;
 
 import com.integra.sitzungstool.model.Integraner;
+import com.integra.sitzungstool.model.NichtGespeicherteSitzung;
 import com.integra.sitzungstool.model.Sitzung;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -261,6 +262,42 @@ public class DatabaseInterface {
                 integraner.add(DatabaseInterface.getIntegraner(anwesendeIntegranerResultSet.getString(1)));
             }
             return integraner;
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            return new ArrayList<>();
+        }
+    }
+    
+    public static ArrayList<NichtGespeicherteSitzung> getNichtGespeicherteSitzungen() {
+        try {
+            String selectNichtGespeicherteSitzungenSql = "SELECT sitzungs_id, benutzerkennung FROM anwesenheite WHERE gespeichert = 0";
+            PreparedStatement selectNichtGespeicherteSitzungenStatement = DatabaseInterface.conn.prepareStatement(selectNichtGespeicherteSitzungenSql);
+            ResultSet nichtGespeicherteSitzungenResultSet = selectNichtGespeicherteSitzungenStatement.executeQuery();
+            ArrayList<NichtGespeicherteSitzung> nichtGespeicherteSitzungen = new ArrayList<>();
+            while (nichtGespeicherteSitzungenResultSet.next()) {
+                String sitzungsID = nichtGespeicherteSitzungenResultSet.getString(1);
+                String benutzerkennung = nichtGespeicherteSitzungenResultSet.getString(2);
+                boolean istSitzungEnthalten = false;
+                int i = 0;
+                for (NichtGespeicherteSitzung ngs : nichtGespeicherteSitzungen) {
+                    if (ngs.getId().equals(sitzungsID)) {
+                        istSitzungEnthalten = true;
+                        break;
+                    }
+                    i++;
+                }
+                if (!istSitzungEnthalten) {
+                    String[] benutzerkennungen = {benutzerkennung};
+                    nichtGespeicherteSitzungen.add(new NichtGespeicherteSitzung(sitzungsID, benutzerkennungen));
+                } else {
+                    String[] benutzerkennungen = nichtGespeicherteSitzungen.get(i).getBenutzerkennungen();
+                    String[] neueBenutzerkennungen = new String[benutzerkennungen.length + 1];
+                    System.arraycopy(benutzerkennungen, 0, neueBenutzerkennungen, 0, benutzerkennungen.length);
+                    neueBenutzerkennungen[neueBenutzerkennungen.length - 1] = benutzerkennung;
+                    nichtGespeicherteSitzungen.set(i, new NichtGespeicherteSitzung(sitzungsID, neueBenutzerkennungen));
+                }
+            }
+            return nichtGespeicherteSitzungen;
         } catch (SQLException e) {
             System.out.println(e.getMessage());
             return new ArrayList<>();
