@@ -133,6 +133,7 @@ public class MainViewController
         });
         
         textFieldKennung.requestFocus();
+        listViewVorstand1.getItems().add(new Integraner(""));
     }
 
     public void startWebCamStream()
@@ -240,6 +241,23 @@ public class MainViewController
 
         pathTransition.play();
     }
+    
+    public void createTasks()
+    {
+        task = new TimerTask()
+        {
+            @Override
+            public void run()
+            {
+                Platform.runLater(() ->
+                {
+                    labelName.setText("");
+                    imageViewPicture.setImage(new Image("/images/imageIntegraLogo.png"));
+                    rotateTransition.play();
+                });
+            }
+        };
+    }
 
     private void closeCamera()
     {
@@ -334,21 +352,9 @@ public class MainViewController
         }
     }
     
-    public void createTasks()
+    public void save()
     {
-        task = new TimerTask()
-        {
-            @Override
-            public void run()
-            {
-                Platform.runLater(() ->
-                {
-                    labelName.setText("");
-                    imageViewPicture.setImage(new Image("/images/imageIntegraLogo.png"));
-                    rotateTransition.play();
-                });
-            }
-        };
+        ServerCommunication.save();
     }
     
     public void loginUserWithTextField()

@@ -21,6 +21,11 @@ public class ServerCommunication {
    private static OkHttpClient client;
    public static Sitzung selectedSitzung;
    
+   public static void save()
+   {
+       System.out.println("Save!!!");
+   }
+   
    public static ObservableList<Sitzung> getSitzungen()
    {
        if (ServerCommunication.client != null) {

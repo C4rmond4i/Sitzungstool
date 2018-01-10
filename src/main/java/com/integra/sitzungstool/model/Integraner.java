@@ -15,6 +15,7 @@ public class Integraner
         
         public Integraner(String benutzerkennung) {
             this.benutzerkennung = benutzerkennung;
+            this.name = "";
             this.anwesend = false;
         }
 	
