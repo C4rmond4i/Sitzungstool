@@ -1,7 +1,6 @@
 package com.integra.sitzungstool;
 
 import com.integra.sitzungstool.controller.MainViewController;
-import com.integra.sitzungstool.general.DataInterface;
 import java.util.Optional;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
@@ -29,7 +28,6 @@ public class MainApp extends Application
         
         //Controller initialisieren       
         MainViewController mvc = (MainViewController) loader.getController();
-        DataInterface.setMainViewController(mvc);
 	mvc.init();
         
         
