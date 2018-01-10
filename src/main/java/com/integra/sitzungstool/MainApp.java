@@ -28,6 +28,7 @@ public class MainApp extends Application
         
         //Controller initialisieren       
         MainViewController mvc = (MainViewController) loader.getController();
+        DataInterface.setMainViewController(mvc);
 	mvc.init();
         
         
