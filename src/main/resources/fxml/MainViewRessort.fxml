@@ -18,14 +18,13 @@
 <?import javafx.scene.shape.Rectangle?>
 <?import javafx.scene.text.Font?>
 
-
 <VBox xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.integra.sitzungstool.controller.MainViewController">
    <children>
       <MenuBar>
         <menus>
           <Menu mnemonicParsing="false" text="File">
             <items>
-              <MenuItem mnemonicParsing="false" onAction="#save" text="Sichern" />
+              <MenuItem mnemonicParsing="false" onAction="#clickOnSave" text="Sichern" />
             </items>
           </Menu>
         </menus>

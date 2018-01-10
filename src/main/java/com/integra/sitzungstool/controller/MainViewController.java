@@ -9,7 +9,6 @@ import com.google.zxing.Result;
 import com.google.zxing.client.j2se.BufferedImageLuminanceSource;
 import com.google.zxing.common.HybridBinarizer;
 import com.integra.sitzungstool.general.DataInterface;
-import com.integra.sitzungstool.general.ServerCommunication;
 import com.integra.sitzungstool.model.Integraner;
 import com.integra.sitzungstool.model.Sitzung;
 import java.awt.image.BufferedImage;
@@ -27,6 +26,8 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.control.ButtonType;
@@ -99,7 +100,7 @@ public class MainViewController
         createAnimations();
         createTasks();
 
-        //Webcam inistalisiren
+        //Webcam inistalisieren
         Task<Void> webCamIntilizer = new Task<Void>()
         {
             @Override
@@ -362,9 +363,27 @@ public class MainViewController
     }
 
     
-    public void save()
+    public void clickOnSave()
     {
-        ServerCommunication.save();
+        if(saveLocalDbToServer())
+        {
+            Alert alert = new Alert(AlertType.CONFIRMATION, "Erfolgreich Daten der lokalen Datenbank auf dem INTEGRA Server gespeichert!", ButtonType.OK);
+            alert.setTitle("Speichern");
+            alert.setHeaderText("Daten erfolgreich gespeichert");
+            alert.showAndWait();
+        }
+        else
+        {
+            Alert alert = new Alert(AlertType.ERROR, "Fehler beim Speichern der Daten der lokalen Datenbank auf dem INTEGRA Server!", ButtonType.OK);
+            alert.setTitle("Speichern");
+            alert.setHeaderText("Fehler beim Speichern der Daten");
+            alert.showAndWait();
+        }
+    }
+    
+    public boolean saveLocalDbToServer()
+    {
+        return DataInterface.saveLocalDbToServer();
     }
     
     public void clearTextField()
