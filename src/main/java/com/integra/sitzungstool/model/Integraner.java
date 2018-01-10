@@ -59,7 +59,8 @@ public class Integraner
 	public String getName()
 	{
             try {
-                return java.net.URLDecoder.decode(this.name, "UTF-8");
+                String name = this.name.replace("%FC", "ü").replace("%F6", "ö").replace("%E4", "ä").replace("%E9", "é");
+                return java.net.URLDecoder.decode(name, "UTF-8");
             } catch (UnsupportedEncodingException ex) {
                 System.out.println(ex.getMessage());
                 return this.name.replace("+", " ");

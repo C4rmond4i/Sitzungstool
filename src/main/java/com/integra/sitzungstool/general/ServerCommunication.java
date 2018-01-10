@@ -151,7 +151,6 @@ public class ServerCommunication
             for (NichtGespeicherteSitzung ngs : nichtGespeicherteSitzungen) {
                 Gson gson = new Gson();
                 String json = gson.toJson(ngs);
-                System.out.println(json);
                 RequestBody body = RequestBody.create(JSON, json);
                 Request request = new Request.Builder()
                         .url("https://integranet-dev.integra-ev.de/module/sitzungsanwesenheit/api/anwesenheit-api.php")

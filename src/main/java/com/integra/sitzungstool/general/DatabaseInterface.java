@@ -312,7 +312,6 @@ public class DatabaseInterface {
             String[] benutzerkennungen = nichtGespeicherteSitzung.getBenutzerkennungen();
             for (int i = 0; i < benutzerkennungen.length; i++) {
                 updateAnwesenheitStatement.setString(2, benutzerkennungen[i]);
-                System.out.println(updateAnwesenheitStatement);
                 updateAnwesenheitStatement.executeUpdate();
             }
             updateAnwesenheitStatement.close();
