@@ -181,7 +181,7 @@ public class MainViewController
                         {
                             try
                             {
-                                Thread.sleep(250); //Looking for QR every 250 milliseconds
+                                Thread.sleep(500); //Looking for QR every 500 milliseconds
                             }
                             catch (Exception e)
                             {
