@@ -19,7 +19,6 @@ import okhttp3.Response;
 public class ServerCommunication
 {
    private static OkHttpClient client;
-   public static Sitzung selectedSitzung;
    
    public static void save()
    {

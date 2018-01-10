@@ -88,8 +88,9 @@ public class DataInterface {
     }
     
     private static String getCurrentSemester() {
-        int currentYear = Calendar.getInstance().get(Calendar.YEAR);
+        /* int currentYear = Calendar.getInstance().get(Calendar.YEAR);
         int currentMonth = Calendar.getInstance().get(Calendar.MONTH);
-        return currentYear + (currentMonth < 6 ? "1" : "2");
+        return currentYear + (currentMonth < 6 ? "1" : "2"); */
+        return "20172";
     }
 }
