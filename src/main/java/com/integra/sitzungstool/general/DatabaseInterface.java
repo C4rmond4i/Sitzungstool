@@ -270,7 +270,7 @@ public class DatabaseInterface {
     
     public static ArrayList<NichtGespeicherteSitzung> getNichtGespeicherteSitzungen() {
         try {
-            String selectNichtGespeicherteSitzungenSql = "SELECT sitzungs_id, benutzerkennung FROM anwesenheite WHERE gespeichert = 0";
+            String selectNichtGespeicherteSitzungenSql = "SELECT sitzungs_id, benutzerkennung FROM anwesenheit WHERE gespeichert = 0";
             PreparedStatement selectNichtGespeicherteSitzungenStatement = DatabaseInterface.conn.prepareStatement(selectNichtGespeicherteSitzungenSql);
             ResultSet nichtGespeicherteSitzungenResultSet = selectNichtGespeicherteSitzungenStatement.executeQuery();
             ArrayList<NichtGespeicherteSitzung> nichtGespeicherteSitzungen = new ArrayList<>();
@@ -301,6 +301,23 @@ public class DatabaseInterface {
         } catch (SQLException e) {
             System.out.println(e.getMessage());
             return new ArrayList<>();
+        }
+    }
+    
+    public static void saveGespeicherteSitzungen(NichtGespeicherteSitzung nichtGespeicherteSitzung) {
+        try {
+            String updateAnwesenheitSql = "UPDATE anwesenheit SET gespeichert = 1 WHERE sitzungs_id = ? AND benutzerkennung = ?";
+            PreparedStatement updateAnwesenheitStatement = DatabaseInterface.conn.prepareStatement(updateAnwesenheitSql);
+            updateAnwesenheitStatement.setString(1, nichtGespeicherteSitzung.getId());
+            String[] benutzerkennungen = nichtGespeicherteSitzung.getBenutzerkennungen();
+            for (int i = 0; i < benutzerkennungen.length; i++) {
+                updateAnwesenheitStatement.setString(2, benutzerkennungen[i]);
+                System.out.println(updateAnwesenheitStatement);
+                updateAnwesenheitStatement.executeUpdate();
+            }
+            updateAnwesenheitStatement.close();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
         }
     }
 

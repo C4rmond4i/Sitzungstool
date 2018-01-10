@@ -13,8 +13,10 @@ import java.util.Calendar;
 import java.util.List;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class ServerCommunication
@@ -143,12 +145,30 @@ public class ServerCommunication
     }
     
     public static boolean saveLocalDbToServer(ArrayList<NichtGespeicherteSitzung> nichtGespeicherteSitzungen) {
-        boolean hatAllesGeklappt = true;
-        for (NichtGespeicherteSitzung ngs : nichtGespeicherteSitzungen) {
-            Gson gson = new Gson();
-            String json = gson.toJson(ngs);
-            System.out.println(json);
+        try {
+            boolean hatAllesGeklappt = true;
+            MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+            for (NichtGespeicherteSitzung ngs : nichtGespeicherteSitzungen) {
+                Gson gson = new Gson();
+                String json = gson.toJson(ngs);
+                System.out.println(json);
+                RequestBody body = RequestBody.create(JSON, json);
+                Request request = new Request.Builder()
+                        .url("https://integranet-dev.integra-ev.de/module/sitzungsanwesenheit/api/anwesenheit-api.php")
+                        .post(body)
+                        .build();
+                Response response = ServerCommunication.client.newCall(request).execute();
+                String responseBody = response.body().string();
+                if (responseBody.equals("Error")) {
+                    hatAllesGeklappt = false;
+                } else {
+                    DatabaseInterface.saveGespeicherteSitzungen(ngs);
+                }
+            }
+            return hatAllesGeklappt;
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+            return false;
         }
-        return hatAllesGeklappt;
     }
 }
