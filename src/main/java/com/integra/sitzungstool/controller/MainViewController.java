@@ -44,6 +44,7 @@ import javafx.scene.shape.Path;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.VLineTo;
 import javafx.stage.Modality;
+import javafx.stage.StageStyle;
 import javafx.util.Duration;
 
 public class MainViewController
@@ -380,10 +381,12 @@ public class MainViewController
         loginPopup.initOwner(labelName.getScene().getWindow());
         loginPopup.setHeaderText("Login");
         loginPopup.setContentText("Bitte geben Sie Ihre INTEGRA Kennung und Ihr Passwort ein.");
-
+        loginPopup.initStyle(StageStyle.UNDECORATED);
+        
         // Set the button types.
         ButtonType loginButtonType = new ButtonType("Login", ButtonData.OK_DONE);
-        loginPopup.getDialogPane().getButtonTypes().addAll(loginButtonType, ButtonType.CANCEL);
+        ButtonType noInternetButtonType = new ButtonType("Ohne Internet fortfahren", ButtonData.CANCEL_CLOSE);
+        loginPopup.getDialogPane().getButtonTypes().addAll(loginButtonType, noInternetButtonType);
 
         // Create the username and password labels and fields.
         GridPane grid = new GridPane();
@@ -409,6 +412,12 @@ public class MainViewController
         // Beide Felder müssen gefüllt sein
         Node loginButton = loginPopup.getDialogPane().lookupButton(loginButtonType);
         loginButton.setDisable(true);
+        Node noInternetButton = loginPopup.getDialogPane().lookupButton(noInternetButtonType);
+        noInternetButton.setVisible(false);
+        
+                        
+                
+                
 
         textFieldUsername.textProperty().addListener((observable, oldValue, newValue) -> {
             loginButton.setDisable(newValue.isEmpty() || passwordFieldPassword.getText().isEmpty());
@@ -420,17 +429,34 @@ public class MainViewController
         });
 
         //Prüfe Login Daten
-        loginButton.addEventFilter(ActionEvent.ACTION, (ActionEvent event)
-                -> {
-            if (!DataInterface.vorstandLogin(textFieldUsername.getText(), passwordFieldPassword.getText())) {
+        loginButton.addEventFilter(ActionEvent.ACTION, (ActionEvent event) -> {
+            //0 Falscher Login Daten
+            if (DataInterface.vorstandLogin(textFieldUsername.getText(), passwordFieldPassword.getText()) == 0)
+            {
                 passwordFieldPassword.clear();
                 textFieldUsername.requestFocus();
                 labelWrongPassword.setText("Falsche Login Daten!");
                 event.consume();
-            } else {
+            }
+            //1 Erfolgreich
+            else if (DataInterface.vorstandLogin(textFieldUsername.getText(), passwordFieldPassword.getText()) == 1)
+            {
                 DataInterface.getIntegranetDataWithLoadingProcess();
             }
+            //-1 Verbindungsfehler
+            else 
+            {
+                noInternetButton.setVisible(true);
+                labelWrongPassword.setText("Verbindungsfehler");
+                event.consume();
+            }
         });
+        
+        noInternetButton.addEventFilter(ActionEvent.ACTION, (ActionEvent event) -> {
+            DataInterface.getIntegranetDataWithLoadingProcess();     
+        });
+        
+
 
         //Setze Grid
         loginPopup.getDialogPane().setContent(grid);
@@ -450,10 +476,11 @@ public class MainViewController
         sitzungsAuswahlPopup.initModality(Modality.APPLICATION_MODAL);
         sitzungsAuswahlPopup.initOwner(labelName.getScene().getWindow());
         sitzungsAuswahlPopup.setHeaderText("Bitte wählen Sie eine Veranstaltung aus.");
-
+        sitzungsAuswahlPopup.initStyle(StageStyle.UNDECORATED);
+        
         // Set the button types.
         ButtonType loginButtonType = new ButtonType("OK", ButtonData.OK_DONE);
-        sitzungsAuswahlPopup.getDialogPane().getButtonTypes().addAll(loginButtonType, ButtonType.CANCEL);
+        sitzungsAuswahlPopup.getDialogPane().getButtonTypes().addAll(loginButtonType);
 
         //ListView erstellen und Daten laden
         ListView<Sitzung> listViewSitzungsAuswahl = new ListView();
