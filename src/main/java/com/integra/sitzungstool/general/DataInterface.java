@@ -37,7 +37,7 @@ public class DataInterface {
         DataInterface.hasDatabaseConnection = hasDatabaseConnection;
     }
 
-    public static boolean vorstandLogin(String username, String password) {
+    public static int vorstandLogin(String username, String password) {
         return ServerCommunication.loginVorstand(username, password);
     }
 

@@ -55,7 +55,13 @@ public class ServerCommunication
    }
    
 
-    public static boolean loginVorstand(String username, String password) {
+    public static int loginVorstand(String username, String password) {
+        /*
+        Codes: 
+        1: erfolgreich
+        0: nicht erfolgreich
+        -1: kein Internet
+        */
         try {
             ServerCommunication.client = new OkHttpClient.Builder()
                     .addInterceptor(new AuthenticationInterceptor(username, password))
@@ -66,11 +72,11 @@ public class ServerCommunication
             Response response = ServerCommunication.client.newCall(request).execute();
             boolean wasSuccessful = response.body().string().equals("Verified");
             DataInterface.setHasIntegranetConnection(wasSuccessful);
-            return wasSuccessful;
+            return wasSuccessful ? 1 : 0;
         } catch (IOException e) {
             System.out.println(e.getMessage());
             DataInterface.setHasIntegranetConnection(false);
-            return false;
+            return -1;
         }
     }
 
