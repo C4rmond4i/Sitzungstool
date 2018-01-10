@@ -19,9 +19,7 @@ import javafx.animation.Interpolator;
 import javafx.animation.PathTransition;
 import javafx.animation.RotateTransition;
 import javafx.application.Platform;
-import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.concurrent.Task;
 import javafx.embed.swing.SwingFXUtils;
@@ -36,7 +34,6 @@ import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.PasswordField;
-import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -91,7 +88,6 @@ public class MainViewController
     private Result result;
     private RotateTransition rotateTransition;
     private TimerTask taskResetImage;
-    public DoubleProperty loadingProgress;
 
     //Data
     public void init()
@@ -133,7 +129,6 @@ public class MainViewController
             labelFalscheKennung.setText("");
         });
         
-        loadingProgress = new SimpleDoubleProperty();
         
         textFieldKennung.requestFocus();
     }
@@ -404,18 +399,12 @@ public class MainViewController
         labelWrongPassword.setTextFill(Color.rgb(210, 39, 30));
         labelWrongPassword.setMinWidth(150);
         
-        //Progess bar
-        ProgressBar progressbar = new ProgressBar(0);
-        progressbar.setPrefWidth(200);
-        progressbar.progressProperty().bind(loadingProgress);
-        
         //Add everhing to grid
         grid.add(new Label("INTEGRA Kennung:"), 0, 0);
         grid.add(textFieldUsername, 1, 0);
         grid.add(new Label("Passwort:"), 0, 1);
         grid.add(passwordFieldPassword, 1, 1);
         grid.add(labelWrongPassword, 0, 2);
-        grid.add(progressbar, 0, 3, 3, 1);
 
         // Beide Felder müssen gefüllt sein
         Node loginButton = loginPopup.getDialogPane().lookupButton(loginButtonType);
