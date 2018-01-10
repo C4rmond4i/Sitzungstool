@@ -87,6 +87,10 @@ public class DataInterface {
 
     }
     
+    public static boolean saveLocalDbToServer() {
+        return ServerCommunication.saveLocalDbToServer(DatabaseInterface.getNichtGespeicherteSitzungen());
+    }
+    
     private static String getCurrentSemester() {
         /* int currentYear = Calendar.getInstance().get(Calendar.YEAR);
         int currentMonth = Calendar.getInstance().get(Calendar.MONTH);
