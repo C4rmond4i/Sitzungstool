@@ -1,5 +1,6 @@
 package com.integra.sitzungstool.general;
 
+import com.integra.sitzungstool.controller.MainViewController;
 import com.integra.sitzungstool.model.Integraner;
 import com.integra.sitzungstool.model.Sitzung;
 import java.io.ByteArrayInputStream;
@@ -23,6 +24,8 @@ import org.apache.commons.io.IOUtils;
 public class DatabaseInterface {
 
     private static Connection conn;
+    
+    private static ArrayList<String> neueBilder = new ArrayList<>();
 
     public static void updateIntegraner(ArrayList<Integraner> integraner) {
         try {
@@ -62,7 +65,8 @@ public class DatabaseInterface {
                     insertStatement.setString(4, i.getName());
                     insertStatement.setString(5, i.getBildHash());
                     insertStatement.executeUpdate();
-                    DatabaseInterface.saveImage(i.getBenutzerkennung());
+                    //DatabaseInterface.saveImage(i.getBenutzerkennung());
+                    DatabaseInterface.neueBilder.add(i.getBenutzerkennung());
                 }
             }
             insertStatement.close();
@@ -91,6 +95,7 @@ public class DatabaseInterface {
                     insertStatement.executeUpdate();
                 }
             }
+            DatabaseInterface.saveImages();
             insertStatement.close();
             updateStatement.close();
         } catch (SQLException e) {
@@ -124,7 +129,8 @@ public class DatabaseInterface {
             ResultSet rs = statement.executeQuery();
             while (rs.next()) {
                 if (!(rs.getString("bild_hash").equals(integraner.getBildHash())) || rs.getClob("bild") == null) {
-                    DatabaseInterface.saveImage(integraner.getBenutzerkennung());
+                    //DatabaseInterface.saveImage(integraner.getBenutzerkennung());
+                    DatabaseInterface.neueBilder.add(integraner.getBenutzerkennung());
                 }
                 statement.close();
                 return true;
@@ -152,6 +158,15 @@ public class DatabaseInterface {
         } catch (SQLException e) {
             System.out.println(e.getMessage());
             return false;
+        }
+    }
+    
+    private static void saveImages() {
+        MainViewController mvc = DataInterface.getMainViewController();
+        for (int i = 0; i < DatabaseInterface.neueBilder.size(); i++) {
+            double progress = i / DatabaseInterface.neueBilder.size();
+            mvc.loadingProgress.set(progress);
+            DatabaseInterface.saveImage(DatabaseInterface.neueBilder.get(i));
         }
     }
 

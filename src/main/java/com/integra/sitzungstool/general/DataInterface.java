@@ -1,15 +1,16 @@
 package com.integra.sitzungstool.general;
 
+import com.integra.sitzungstool.controller.MainViewController;
 import com.integra.sitzungstool.model.Integraner;
 import com.integra.sitzungstool.model.Sitzung;
 import java.util.ArrayList;
-import java.util.Calendar;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 public class DataInterface {
 
     private static Sitzung selectedSitzung = null;
+    private static MainViewController mvc;
     private static boolean hasIntegranetConnection = false;
     private static boolean hasDatabaseConnection = false;
 
@@ -19,6 +20,14 @@ public class DataInterface {
 
     public static void setSitzung(Sitzung sitzung) {
         DataInterface.selectedSitzung = sitzung;
+    }
+    
+    public static MainViewController getMainViewController() {
+        return DataInterface.mvc;
+    }
+    
+    public static void setMainViewController(MainViewController mvc) {
+        DataInterface.mvc = mvc;
     }
 
     public static boolean hasIntegranetConnection() {
