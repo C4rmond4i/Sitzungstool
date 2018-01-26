@@ -187,7 +187,7 @@ public class DatabaseInterface {
         return integraner;
     }
 
-    private static Integraner getIntegraner(String benutzerkennung) {
+    public static Integraner getIntegraner(String benutzerkennung) {
         try {
             String selectSql = "SELECT * FROM integraner WHERE benutzerkennung = ?";
             PreparedStatement selectStatement = DatabaseInterface.conn.prepareStatement(selectSql);

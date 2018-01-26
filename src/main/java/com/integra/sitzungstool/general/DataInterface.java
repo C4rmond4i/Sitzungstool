@@ -90,6 +90,13 @@ public class DataInterface {
         return false;
     }
     
+    public static Integraner getIntegraner(String benutzerkennung) {
+        if (DataInterface.hasDatabaseConnection()) {
+            return DatabaseInterface.getIntegraner(benutzerkennung);
+        }
+        return null;
+    }
+    
     public static boolean saveLocalDbToServer() {
         return ServerCommunication.saveLocalDbToServer(DatabaseInterface.getNichtGespeicherteSitzungen());
     }
