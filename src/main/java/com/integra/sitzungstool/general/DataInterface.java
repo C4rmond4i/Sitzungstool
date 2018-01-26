@@ -83,8 +83,11 @@ public class DataInterface {
         DatabaseInterface.updateSitzungen(ServerCommunication.getSitzungen(DataInterface.getCurrentSemester()));
     }
 
-    public static void refreshIntegranetData() {
-
+    public static boolean deleteAnwesenheit(String benutzerkennung) {
+        if (DataInterface.hasDatabaseConnection() && DataInterface.getSitzung() != null) {
+            return DatabaseInterface.deleteAnwesenheit(DataInterface.getSitzung() ,benutzerkennung);
+        }
+        return false;
     }
     
     public static boolean saveLocalDbToServer() {
