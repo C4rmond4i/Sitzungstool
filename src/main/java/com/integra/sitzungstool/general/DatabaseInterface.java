@@ -268,6 +268,21 @@ public class DatabaseInterface {
         }
     }
     
+    public static boolean deleteAnwesenheit(Sitzung sitzung, String benutzerkennung) {
+        try {
+            String deleteAnwesenheitSql = "DELETE * FROM anwesenheit WHERE sitzungs_id = ? AND benutzerkennung = ?";
+            PreparedStatement deleteAnwesenheitStatement = DatabaseInterface.conn.prepareStatement(deleteAnwesenheitSql);
+            deleteAnwesenheitStatement.setString(1, sitzung.getId());
+            deleteAnwesenheitStatement.setString(2, benutzerkennung);
+            deleteAnwesenheitStatement.executeUpdate();
+            deleteAnwesenheitStatement.close();
+            return true;
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            return false;
+        }
+    }
+    
     public static ArrayList<NichtGespeicherteSitzung> getNichtGespeicherteSitzungen() {
         try {
             String selectNichtGespeicherteSitzungenSql = "SELECT sitzungs_id, benutzerkennung FROM anwesenheit WHERE gespeichert = 0";
