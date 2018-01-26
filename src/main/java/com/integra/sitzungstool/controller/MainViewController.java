@@ -266,7 +266,19 @@ public class MainViewController
     
     public void loginUserWithTextField()
     {
-        loginUserWithQR(textFieldKennung.getText().toLowerCase());
+        if(textFieldKennung.getText().toLowerCase().startsWith("delete"))
+        {
+            if(DataInterface.deleteAnwesenheit(textFieldKennung.getText().toLowerCase().replace("delete ","")));
+            {
+                removeIntegranerFromList(DataInterface.getIntegraner(textFieldKennung.getText().toLowerCase().replace("delete ","")));
+            }
+            
+        }
+        else
+        {
+            loginUserWithQR(textFieldKennung.getText().toLowerCase());
+        }
+        
     }
         
     public void loginUserWithQR(String id)
@@ -277,7 +289,7 @@ public class MainViewController
             if (i.isAnwesend())
             {
                 labelName.setTextFill(Color.rgb(210, 39, 30));
-                labelName.setText("Bereits eingeloggt");
+                labelName.setText(i.getName().substring(0, i.getName().indexOf(" ")) + ", Du bist bereits eingeloggt!");
                 textFieldKennung.selectAll();
 
                 new java.util.Timer().schedule(new java.util.TimerTask()
@@ -365,13 +377,67 @@ public class MainViewController
         amount++;
         labelAmount.setText("(" + amount + ")");
     }
+    
+    private void removeIntegranerFromList(Integraner i)
+    {
+        switch (i.getRessort())
+        {
+            case "ressort-it":
+                listViewIT.getItems().remove(i);
+                labelIT.setText("Ressort IT (" + listViewIT.getItems().size() + ")");
+                break;
+            case "ressort-per":
+                listViewPersonal.getItems().remove(i);
+                labelPersonal.setText("Ressort Personal (" + listViewPersonal.getItems().size() + ")");
+                break;
+            case "ressort-aq":
+                listViewAkquise.getItems().remove(i);
+                labelAkquise.setText("Ressort Akquise (" + listViewAkquise.getItems().size() + ")");
+                break;
+            case "ressort-pr":
+                listViewPR.getItems().remove(i);
+                labelPR.setText("Ressort PR (" + listViewPR.getItems().size() + ")");
+                break;
+            case "ressort-qm":
+                listViewQM.getItems().remove(i);
+                labelQM.setText("Ressort QM (" + listViewQM.getItems().size() + ")");
+                break;
+            case "keins":
+
+                switch (i.getStab())
+                {
+                    case "stab-1v":
+                        listViewVorstand1.getItems().remove(i);
+                        labelVorstand1.setText("1. Vorstand & Stab (" + listViewVorstand1.getItems().size() + ")");
+                        break;
+                    case "stab-2v":
+                        listViewVorstand2.getItems().remove(i);
+                        labelVorstand2.setText("2. Vorstand & Stab (" + listViewVorstand2.getItems().size() + ")");
+                        break;
+                    case "stab-3v":
+                        listViewVorstand3.getItems().remove(i);
+                        labelVorstand3.setText("3. Vorstand & Stab (" + listViewVorstand3.getItems().size() + ")");
+                        break;
+                    case "keiner":
+                        listViewWeitere.getItems().remove(i);
+                        labelWeitere.setText("Weitere (" + listViewWeitere.getItems().size() + ")");
+                        break;
+                }
+                break;
+        }
+
+        //Anzahl erhöhen
+        int amount = Integer.valueOf(labelAmount.getText().replace("(", "").replace(")", ""));
+        amount--;
+        labelAmount.setText("(" + amount + ")");
+    }
 
     
     public void clickOnSave()
     {
         if(saveLocalDbToServer())
         {
-            Alert alert = new Alert(AlertType.CONFIRMATION, "Erfolgreich Daten der lokalen Datenbank auf dem INTEGRA Server gespeichert!", ButtonType.OK);
+            Alert alert = new Alert(AlertType.CONFIRMATION, "Daten der lokalen Datenbank wurden erfolgreich auf dem INTEGRA Server gespeichert!", ButtonType.OK);
             alert.setTitle("Speichern");
             alert.setHeaderText("Daten erfolgreich gespeichert");
             alert.showAndWait();
