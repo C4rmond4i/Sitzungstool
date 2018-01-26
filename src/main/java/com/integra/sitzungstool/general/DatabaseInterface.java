@@ -270,7 +270,7 @@ public class DatabaseInterface {
     
     public static boolean deleteAnwesenheit(Sitzung sitzung, String benutzerkennung) {
         try {
-            String deleteAnwesenheitSql = "DELETE * FROM anwesenheit WHERE sitzungs_id = ? AND benutzerkennung = ?";
+            String deleteAnwesenheitSql = "DELETE FROM anwesenheit WHERE sitzungs_id = ? AND benutzerkennung = ?";
             PreparedStatement deleteAnwesenheitStatement = DatabaseInterface.conn.prepareStatement(deleteAnwesenheitSql);
             deleteAnwesenheitStatement.setString(1, sitzung.getId());
             deleteAnwesenheitStatement.setString(2, benutzerkennung);
