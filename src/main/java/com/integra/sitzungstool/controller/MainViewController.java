@@ -270,9 +270,12 @@ public class MainViewController
         {
             if(DataInterface.deleteAnwesenheit(textFieldKennung.getText().toLowerCase().replace("delete ","")));
             {
-                removeIntegranerFromList(DataInterface.getIntegraner(textFieldKennung.getText().toLowerCase().replace("delete ","")));
+                if(DataInterface.getIntegraner(textFieldKennung.getText().toLowerCase().replace("delete ","")) != null)
+                {
+                    removeIntegranerFromList(DataInterface.getIntegraner(textFieldKennung.getText().toLowerCase().replace("delete ","")));
+                    textFieldKennung.setText("");
+                }
             }
-            
         }
         else
         {
@@ -378,48 +381,102 @@ public class MainViewController
         labelAmount.setText("(" + amount + ")");
     }
     
-    private void removeIntegranerFromList(Integraner i)
+    private void removeIntegranerFromList(Integraner integranerToDelete)
     {
-        switch (i.getRessort())
+        switch (integranerToDelete.getRessort())
         {
             case "ressort-it":
-                listViewIT.getItems().remove(i);
+                for(int pos = 0; pos < listViewIT.getItems().size(); pos++)
+                {
+                    if(listViewIT.getItems().get(pos).getName().equals(integranerToDelete.getName()))
+                    {
+                        listViewIT.getItems().remove(pos);
+                    }
+                }
                 labelIT.setText("Ressort IT (" + listViewIT.getItems().size() + ")");
                 break;
             case "ressort-per":
-                listViewPersonal.getItems().remove(i);
+                for(int pos = 0; pos < listViewPersonal.getItems().size(); pos++)
+                {
+                    if(listViewPersonal.getItems().get(pos).getName().equals(integranerToDelete.getName()))
+                    {
+                        listViewPersonal.getItems().remove(pos);
+                    }
+                }
                 labelPersonal.setText("Ressort Personal (" + listViewPersonal.getItems().size() + ")");
                 break;
             case "ressort-aq":
-                listViewAkquise.getItems().remove(i);
+                for(int pos = 0; pos < listViewAkquise.getItems().size(); pos++)
+                {
+                    if(listViewAkquise.getItems().get(pos).getName().equals(integranerToDelete.getName()))
+                    {
+                        listViewAkquise.getItems().remove(pos);
+                    }
+                }
                 labelAkquise.setText("Ressort Akquise (" + listViewAkquise.getItems().size() + ")");
                 break;
             case "ressort-pr":
-                listViewPR.getItems().remove(i);
+                for(int pos = 0; pos < listViewPR.getItems().size(); pos++)
+                {
+                    if(listViewPR.getItems().get(pos).getName().equals(integranerToDelete.getName()))
+                    {
+                        listViewPR.getItems().remove(pos);
+                    }
+                }
                 labelPR.setText("Ressort PR (" + listViewPR.getItems().size() + ")");
                 break;
             case "ressort-qm":
-                listViewQM.getItems().remove(i);
+                for(int pos = 0; pos < listViewQM.getItems().size(); pos++)
+                {
+                    if(listViewQM.getItems().get(pos).getName().equals(integranerToDelete.getName()))
+                    {
+                        listViewQM.getItems().remove(pos);
+                    }
+                }
                 labelQM.setText("Ressort QM (" + listViewQM.getItems().size() + ")");
                 break;
             case "keins":
 
-                switch (i.getStab())
+                switch (integranerToDelete.getStab())
                 {
                     case "stab-1v":
-                        listViewVorstand1.getItems().remove(i);
+                        for(int pos = 0; pos < listViewVorstand1.getItems().size(); pos++)
+                        {
+                            if(listViewVorstand1.getItems().get(pos).getName().equals(integranerToDelete.getName()))
+                            {
+                                listViewVorstand1.getItems().remove(pos);
+                            }
+                        }
                         labelVorstand1.setText("1. Vorstand & Stab (" + listViewVorstand1.getItems().size() + ")");
                         break;
                     case "stab-2v":
-                        listViewVorstand2.getItems().remove(i);
+                        for(int pos = 0; pos < listViewVorstand2.getItems().size(); pos++)
+                        {
+                            if(listViewVorstand2.getItems().get(pos).getName().equals(integranerToDelete.getName()))
+                            {
+                                listViewVorstand2.getItems().remove(pos);
+                            }
+                        }
                         labelVorstand2.setText("2. Vorstand & Stab (" + listViewVorstand2.getItems().size() + ")");
                         break;
                     case "stab-3v":
-                        listViewVorstand3.getItems().remove(i);
+                        for(int pos = 0; pos < listViewVorstand3.getItems().size(); pos++)
+                        {
+                            if(listViewVorstand3.getItems().get(pos).getName().equals(integranerToDelete.getName()))
+                            {
+                                listViewVorstand3.getItems().remove(pos);
+                            }
+                        }
                         labelVorstand3.setText("3. Vorstand & Stab (" + listViewVorstand3.getItems().size() + ")");
                         break;
                     case "keiner":
-                        listViewWeitere.getItems().remove(i);
+                        for(int pos = 0; pos < listViewWeitere.getItems().size(); pos++)
+                        {
+                            if(listViewWeitere.getItems().get(pos).getName().equals(integranerToDelete.getName()))
+                            {
+                                listViewWeitere.getItems().remove(pos);
+                            }
+                        }
                         labelWeitere.setText("Weitere (" + listViewWeitere.getItems().size() + ")");
                         break;
                 }
