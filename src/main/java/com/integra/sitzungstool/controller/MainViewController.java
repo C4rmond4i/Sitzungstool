@@ -656,7 +656,7 @@ public class MainViewController
         sitzungsAuswahlPopup.getDialogPane().setContent(listViewSitzungsAuswahl);
 
         // Es muss eine Sitzung ausgewählt werden
-        Node confirmButton = sitzungsAuswahlPopup.getDialogPane().lookupButton(confirmButtonType);
+        Node confirmButton = sitzungsAuswahlPopup.getDialogPane().lookupButton(loginButtonType);
         confirmButton.setDisable(true);
         
         //Enter Hotkey
