@@ -64,6 +64,7 @@ public class MainApp extends Application
 	mainStage.setTitle("INTEGRA Sitzungstool");
 
 	mainStage.show();
+        mainStage.setFullScreen(true);
         mvc.showLoginPopup();
     }
     

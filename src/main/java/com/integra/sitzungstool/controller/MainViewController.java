@@ -13,8 +13,6 @@ import com.integra.sitzungstool.general.ErrorHandler;
 import com.integra.sitzungstool.model.Integraner;
 import com.integra.sitzungstool.model.Sitzung;
 import java.awt.image.BufferedImage;
-import java.util.Timer;
-import java.util.TimerTask;
 import javafx.animation.Interpolator;
 import javafx.animation.PathTransition;
 import javafx.animation.RotateTransition;
@@ -91,7 +89,9 @@ public class MainViewController
     private Result result;
     
     private RotateTransition rotateTransition;
-    private TimerTask taskResetImage;
+    private Integraner lastIntegranerLogin;
+    private Runnable pictureAndLastIntegranerLoginReseterRunnable;
+    private Thread pictureAndLastIntegranerLoginReseterThread;
 
     //Data
     public void init()
@@ -247,19 +247,21 @@ public class MainViewController
     }
     
     public void createTasks()
-    {
-        taskResetImage = new TimerTask()
-        {
-            @Override
-            public void run()
+    {        
+        pictureAndLastIntegranerLoginReseterRunnable = () -> { 
+            try
             {
-                Platform.runLater(() ->
-                {
-                    labelName.setText("");
-                    imageViewPicture.setImage(new Image("/images/imageIntegraLogo.png"));
-                    rotateTransition.play();
-                });
+                Thread.sleep(3000);
             }
+            catch (InterruptedException ex){return;}
+            
+            lastIntegranerLogin = null;
+            Platform.runLater(() ->
+            {
+                labelName.setText("");
+                imageViewPicture.setImage(new Image("/images/imageIntegraLogo.png"));
+                rotateTransition.play();
+            });
         };
     }
 
@@ -286,13 +288,17 @@ public class MainViewController
         
     public void loginUserWithQR(String id)
     {
-        Integraner i = DataInterface.integranerLogin(id); //Speichere in lokaler Datenbank
-        if (i != null && i.getBenutzerkennung().equals(id))
+        Integraner integraner = DataInterface.integranerLogin(id); //Speichere in lokaler Datenbank
+        if (integraner != null && integraner.getBenutzerkennung().equals(id))
         {
-            if (i.isAnwesend())
+            if(lastIntegranerLogin != null && integraner.getBenutzerkennung().equals(lastIntegranerLogin.getBenutzerkennung()))
+            {
+
+            }
+            else if (integraner.isAnwesend()) //Bereits anwesend
             {
                 labelName.setTextFill(Color.rgb(210, 39, 30));
-                labelName.setText(i.getName().substring(0, i.getName().indexOf(" ")) + ", Du bist bereits eingeloggt!");
+                labelName.setText(integraner.getName().substring(0, integraner.getName().indexOf(" ")) + ", Du bist bereits eingeloggt!");
                 textFieldKennung.selectAll();
 
                 new java.util.Timer().schedule(new java.util.TimerTask()
@@ -307,21 +313,31 @@ public class MainViewController
                     }
                 }, 3000);
             }
-            else
+            else //Einloggen
             {
-                labelName.setText("Hallo, " + i.getName().substring(0, i.getName().indexOf(" ")) + "!");
-                imageViewPicture.setImage(i.getBild());
+                //Einloggen auf GUI anzeigen
+                labelName.setText("Hallo, " + integraner.getName().substring(0, integraner.getName().indexOf(" ")) + "!");
+                imageViewPicture.setImage(integraner.getBild());
                 textFieldKennung.setText("");
-                i.setAnwesend(true);
-
-                insertIntegranerIntoList(i);
-
-
-                taskResetImage.cancel();
-                createTasks();
-                new Timer().schedule(taskResetImage, 5000);
+                insertIntegranerIntoList(integraner);
+                
+                //In Logik einloggen
+                integraner.setAnwesend(true);
+                lastIntegranerLogin = integraner;
+                                
+                //Animation in der Warteschlange abbrechen wenn schnell hintereinander eingelogt wird
+                if(pictureAndLastIntegranerLoginReseterThread != null && pictureAndLastIntegranerLoginReseterThread.isAlive())
+                {
+                    pictureAndLastIntegranerLoginReseterThread.interrupt();
+                }
+                
+                //Neue Bild Reset und LastIntegraner Reset starten
+                pictureAndLastIntegranerLoginReseterThread = new Thread(pictureAndLastIntegranerLoginReseterRunnable);
+                pictureAndLastIntegranerLoginReseterThread.start();
             }
-        } else {
+        }
+        else //Falsche ID
+        {
             labelFalscheKennung.setText("Falsche Kennung");
             textFieldKennung.selectAll();
         }
@@ -495,6 +511,8 @@ public class MainViewController
         if(saveLocalDbToServer())
         {
             Alert alert = new Alert(AlertType.CONFIRMATION, "Daten der lokalen Datenbank wurden erfolgreich auf dem INTEGRA Server gespeichert!", ButtonType.OK);
+            alert.initOwner(labelName.getScene().getWindow());
+            alert.initModality(Modality.WINDOW_MODAL);
             alert.setTitle("Speichern");
             alert.setHeaderText("Daten erfolgreich gespeichert");
             alert.showAndWait();
@@ -502,6 +520,8 @@ public class MainViewController
         else
         {
             Alert alert = new Alert(AlertType.ERROR, "Fehler beim Speichern der Daten der lokalen Datenbank auf dem INTEGRA Server!", ButtonType.OK);
+            alert.initOwner(labelName.getScene().getWindow());
+            alert.initModality(Modality.WINDOW_MODAL);
             alert.setTitle("Speichern");
             alert.setHeaderText("Fehler beim Speichern der Daten");
             alert.showAndWait();
