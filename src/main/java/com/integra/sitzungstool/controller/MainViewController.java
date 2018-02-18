@@ -656,8 +656,13 @@ public class MainViewController
         sitzungsAuswahlPopup.getDialogPane().setContent(listViewSitzungsAuswahl);
 
         // Es muss eine Sitzung ausgewählt werden
-        Node confirmButton = sitzungsAuswahlPopup.getDialogPane().lookupButton(loginButtonType);
+        Node confirmButton = sitzungsAuswahlPopup.getDialogPane().lookupButton(confirmButtonType);
         confirmButton.setDisable(true);
+        
+        //Enter Hotkey
+        Button buttonConfirmButton = (Button) confirmButton;
+        buttonConfirmButton.setDefaultButton(true);
+        
         listViewSitzungsAuswahl.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             DataInterface.setSitzung(newValue);
             confirmButton.setDisable(false);
