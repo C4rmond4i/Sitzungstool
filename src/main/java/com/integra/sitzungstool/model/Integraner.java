@@ -1,5 +1,6 @@
 package com.integra.sitzungstool.model;
 
+import java.io.UnsupportedEncodingException;
 import javafx.scene.image.Image;
 
 public class Integraner
@@ -9,7 +10,14 @@ public class Integraner
 	private String name;
 	private String ressort;
         private String stab;
+        private String bildHash;
 	private boolean anwesend;
+        
+        public Integraner(String benutzerkennung) {
+            this.benutzerkennung = benutzerkennung;
+            this.name = "";
+            this.anwesend = false;
+        }
 	
 	public Integraner(String benutzerkennung, Image bild, String name, String ressort, String stab)
 	{
@@ -50,7 +58,13 @@ public class Integraner
 
 	public String getName()
 	{
-		return this.name.replace("+", " ");
+            try {
+                String name = this.name.replace("%FC", "ü").replace("%F6", "ö").replace("%E4", "ä").replace("%E9", "é");
+                return java.net.URLDecoder.decode(name, "UTF-8");
+            } catch (UnsupportedEncodingException ex) {
+                System.out.println(ex.getMessage());
+                return this.name.replace("+", " ");
+            }
 	}
 
 	public void setName(String name)
@@ -78,7 +92,14 @@ public class Integraner
 		this.stab = stab;
 	}
 
-	
+	public String getBildHash() {
+                return this.bildHash;
+        }
+        
+        public void setBildHash(String bildHash) {
+                this.bildHash = bildHash;
+        }
+        
 	public boolean isAnwesend()
 	{
 		return this.anwesend;

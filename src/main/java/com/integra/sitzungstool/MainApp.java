@@ -40,7 +40,10 @@ public class MainApp extends Application
                 alert.setTitle("Wirklich beenden?");
                 alert.setHeaderText("Wirklich beenden?");
                 alert.setContentText("Sind Sie sicher, dass Sie das Sitzungstool schließen wollen?");
-
+                
+                //Lokale DB auf Server sichern
+                mvc.saveLocalDbToServer();
+                
                 Optional<ButtonType> result = alert.showAndWait();
                 if (!(result.get() == ButtonType.OK))
                 {
@@ -61,6 +64,7 @@ public class MainApp extends Application
 	mainStage.setTitle("INTEGRA Sitzungstool");
 
 	mainStage.show();
+        mainStage.setFullScreen(true);
         mvc.showLoginPopup();
     }
     
