@@ -4,6 +4,7 @@ import com.integra.sitzungstool.controller.MainViewController;
 import com.integra.sitzungstool.model.Integraner;
 import com.integra.sitzungstool.model.Sitzung;
 import java.util.ArrayList;
+import java.util.Calendar;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -102,9 +103,8 @@ public class DataInterface {
     }
     
     private static String getCurrentSemester() {
-        /* int currentYear = Calendar.getInstance().get(Calendar.YEAR);
+        int currentYear = Calendar.getInstance().get(Calendar.YEAR);
         int currentMonth = Calendar.getInstance().get(Calendar.MONTH);
-        return currentYear + (currentMonth < 6 ? "1" : "2"); */
-        return "20172";
+        return currentYear + (currentMonth < 6 ? "1" : "2");
     }
 }

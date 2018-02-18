@@ -22,36 +22,6 @@ import okhttp3.Response;
 public class ServerCommunication
 {
    private static OkHttpClient client;
-   
-   public static ObservableList<Sitzung> getSitzungen()
-   {
-       if (ServerCommunication.client != null) {
-           try {
-               int currentYear = Calendar.getInstance().get(Calendar.YEAR);
-               int currentMonth = Calendar.getInstance().get(Calendar.MONTH);
-               String semester = currentYear + (currentMonth < 6 ? "1" : "2");
-               Request request = new Request.Builder()
-                       .url("https://integranet-dev.integra-ev.de/module/sitzungsanwesenheit/api/anwesenheit-api.php?method=sitzungen&semester=" + semester)
-                       .build();
-               Response response = ServerCommunication.client.newCall(request).execute();
-               String body = response.body().string();
-               GsonBuilder gsonBuilder = new GsonBuilder();
-               gsonBuilder.registerTypeAdapter(Sitzung.class, new SitzungDeserializer());
-               Gson gson = gsonBuilder.create();
-               ArrayList<Sitzung> sitzungenArrayList = gson.fromJson(body, new TypeToken<List<Sitzung>>(){}.getType());
-               ObservableList<Sitzung> sitzungen = FXCollections.observableArrayList();
-               sitzungenArrayList.forEach((s) -> {
-                   sitzungen.add(s);
-               });
-               return sitzungen;
-           } catch (IOException e) {
-               System.out.println(e.getMessage());
-               return FXCollections.observableArrayList();
-           }
-       }
-       return FXCollections.observableArrayList();
-   }
-   
 
     public static int loginVorstand(String username, String password) {
         /*
@@ -65,7 +35,7 @@ public class ServerCommunication
                     .addInterceptor(new AuthenticationInterceptor(username, password))
                     .build();
             Request request = new Request.Builder()
-                    .url("https://integranet-dev.integra-ev.de/module/sitzungsanwesenheit/api/anwesenheit-api.php?method=login")
+                    .url("https://integranet-ng.integra-ev.de/module/sitzungsanwesenheit/api/anwesenheit-api.php?method=login")
                     .build();
             Response response = ServerCommunication.client.newCall(request).execute();
             boolean wasSuccessful = response.body().string().equals("Verified");
@@ -82,7 +52,7 @@ public class ServerCommunication
         if (DataInterface.hasIntegranetConnection()) {
             try {
                 Request request = new Request.Builder()
-                        .url("https://integranet-dev.integra-ev.de/module/sitzungsanwesenheit/api/anwesenheit-api.php?method=users")
+                        .url("https://integranet-ng.integra-ev.de/module/sitzungsanwesenheit/api/anwesenheit-api.php?method=users")
                         .build();
                 Response response = ServerCommunication.client.newCall(request).execute();
                 String body = response.body().string();
@@ -102,7 +72,7 @@ public class ServerCommunication
         if (DataInterface.hasIntegranetConnection()) {
             try {
                 Request request = new Request.Builder()
-                        .url("https://integranet-dev.integra-ev.de/module/sitzungsanwesenheit/api/anwesenheit-api.php?method=bild&id=" + benutzerkennung)
+                        .url("https://integranet-ng.integra-ev.de/module/sitzungsanwesenheit/api/anwesenheit-api.php?method=bild&id=" + benutzerkennung)
                         .build();
                 Response response = ServerCommunication.client.newCall(request).execute();
                 String body = response.body().string();
@@ -126,7 +96,7 @@ public class ServerCommunication
         if (DataInterface.hasIntegranetConnection()) {
             try {
                 Request request = new Request.Builder()
-                        .url("https://integranet-dev.integra-ev.de/module/sitzungsanwesenheit/api/anwesenheit-api.php?method=sitzungen&semester=" + semester)
+                        .url("https://integranet-ng.integra-ev.de/module/sitzungsanwesenheit/api/anwesenheit-api.php?method=sitzungen&semester=" + semester)
                         .build();
                 Response response = ServerCommunication.client.newCall(request).execute();
                 String body = response.body().string();
@@ -153,7 +123,7 @@ public class ServerCommunication
                 String json = gson.toJson(ngs);
                 RequestBody body = RequestBody.create(JSON, json);
                 Request request = new Request.Builder()
-                        .url("https://integranet-dev.integra-ev.de/module/sitzungsanwesenheit/api/anwesenheit-api.php")
+                        .url("https://integranet-ng.integra-ev.de/module/sitzungsanwesenheit/api/anwesenheit-api.php")
                         .post(body)
                         .build();
                 Response response = ServerCommunication.client.newCall(request).execute();
