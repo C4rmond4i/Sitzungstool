@@ -43,7 +43,7 @@
                               <Font size="18.0" />
                            </font>
                         </Label>
-                        <Label fx:id="labelAmount" text="(0)" HBox.hgrow="ALWAYS">
+                        <Label fx:id="labelAmount" text="(0 | 0%)" HBox.hgrow="ALWAYS">
                            <font>
                               <Font size="18.0" />
                            </font>
@@ -56,19 +56,19 @@
                            <children>
                               <VBox>
                                  <children>
-                                    <Label fx:id="labelVorstand1" text="1. Vorstand &amp; Stab (0)" />
+                                    <Label fx:id="labelVorstand1" text="1. Vorstand &amp; Stab (0 | 0%)" />
                                     <ListView fx:id="listViewVorstand1" focusTraversable="false" />
                                  </children>
                               </VBox>
                               <VBox>
                                  <children>
-                                    <Label fx:id="labelAkquise" text="Ressort Akquise (0)" />
+                                    <Label fx:id="labelAkquise" text="Ressort Akquise (0 | 0%)" />
                                     <ListView fx:id="listViewAkquise" focusTraversable="false" />
                                  </children>
                               </VBox>
                               <VBox>
                                  <children>
-                                    <Label fx:id="labelPR" text="Ressort PR (0)" />
+                                    <Label fx:id="labelPR" text="Ressort PR (0 | 0%)" />
                                     <ListView fx:id="listViewPR" focusTraversable="false" />
                                  </children>
                               </VBox>
@@ -78,19 +78,19 @@
                            <children>
                               <VBox>
                                  <children>
-                                    <Label fx:id="labelVorstand2" text="2. Vorstand &amp; Stab (0)" />
+                                    <Label fx:id="labelVorstand2" text="2. Vorstand &amp; Stab (0 | 0%)" />
                                     <ListView fx:id="listViewVorstand2" focusTraversable="false" />
                                  </children>
                               </VBox>
                               <VBox>
                                  <children>
-                                    <Label fx:id="labelIT" text="Ressort IT (0)" />
+                                    <Label fx:id="labelIT" text="Ressort IT (0) | 0%" />
                                     <ListView fx:id="listViewIT" focusTraversable="false" />
                                  </children>
                               </VBox>
                               <VBox>
                                  <children>
-                                    <Label fx:id="labelQM" text="Ressort QM (0)" />
+                                    <Label fx:id="labelQM" text="Ressort QM (0 | 0%)" />
                                     <ListView fx:id="listViewQM" focusTraversable="false" />
                                  </children>
                               </VBox>
@@ -100,19 +100,19 @@
                            <children>
                               <VBox>
                                  <children>
-                                    <Label fx:id="labelVorstand3" text="3. Vorstand &amp; Stab (0)" />
+                                    <Label fx:id="labelVorstand3" text="3. Vorstand &amp; Stab (0 | 0%)" />
                                     <ListView fx:id="listViewVorstand3" focusTraversable="false" />
                                  </children>
                               </VBox>
                               <VBox>
                                  <children>
-                                    <Label fx:id="labelPersonal" text="Ressort Personal (0)" />
+                                    <Label fx:id="labelPersonal" text="Ressort Personal (0 | 0%)" />
                                     <ListView fx:id="listViewPersonal" focusTraversable="false" />
                                  </children>
                               </VBox>
                               <VBox>
                                  <children>
-                                    <Label fx:id="labelWeitere" text="Weitere (0)" />
+                                    <Label fx:id="labelWeitere" text="Weitere (0 | 0%)" />
                                     <ListView fx:id="listViewWeitere" focusTraversable="false" />
                                  </children>
                               </VBox>

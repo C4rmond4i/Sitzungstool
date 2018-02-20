@@ -13,6 +13,7 @@ import com.integra.sitzungstool.general.ErrorHandler;
 import com.integra.sitzungstool.model.Integraner;
 import com.integra.sitzungstool.model.Sitzung;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 import javafx.animation.Interpolator;
 import javafx.animation.PathTransition;
 import javafx.animation.RotateTransition;
@@ -92,7 +93,20 @@ public class MainViewController
     private Integraner lastIntegranerLogin;
     private Runnable pictureAndLastIntegranerLoginReseterRunnable;
     private Thread pictureAndLastIntegranerLoginReseterThread;
-
+    
+    //Relative Ressortangaben
+    private double vorstand1Amount;
+    private double vorstand2Amount;
+    private double vorstand3Amount;
+    private double akquiseAmount;
+    private double itAmount;
+    private double personalAmount;
+    private double prAmount;
+    private double qmAmount;
+    private double weitereAmount;
+    private double allAmount;
+    private int actualAllAmount;
+    
     //Data
     public void init()
     {
@@ -100,6 +114,8 @@ public class MainViewController
         createAnimations(); //Animationen erstellen
         createTasks();  //Tasks erstellen
         startWebCamStream(); //Webcam inistalisieren
+        countIntegraner(); //Für Ressort Prozentanzeige
+        
         
         //GUI vorbereiten
         buttonEnter.setDisable(true);
@@ -265,6 +281,50 @@ public class MainViewController
         };
     }
 
+    public void countIntegraner()
+    {
+        ArrayList<Integraner> allIntegraner = DataInterface.getAllIntegraner();
+        for(int i = 0; i < allIntegraner.size(); i++)
+        {
+            switch (allIntegraner.get(i).getRessort())
+            {
+                case "ressort-it":
+                    itAmount++;
+                    break;
+                case "ressort-per":
+                    personalAmount++;
+                    break;
+                case "ressort-aq":
+                    akquiseAmount++;
+                    break;
+                case "ressort-pr":
+                    personalAmount++;
+                    break;
+                case "ressort-qm":
+                    qmAmount++;
+                    break;
+                case "keins":
+
+                    switch (allIntegraner.get(i).getStab())
+                    {
+                        case "stab-1v":
+                            vorstand1Amount++;
+                            break;
+                        case "stab-2v":
+                            vorstand2Amount++;
+                            break;
+                        case "stab-3v":
+                           vorstand3Amount++;
+                            break;
+                        case "keiner":
+                            weitereAmount++;
+                            break;
+                    }
+                    break;
+            }
+        }
+        allAmount =  vorstand1Amount + vorstand2Amount + vorstand3Amount + akquiseAmount + itAmount + personalAmount + prAmount + qmAmount + weitereAmount;
+    }
     
     public void loginUserWithTextField()
     {
@@ -349,23 +409,28 @@ public class MainViewController
         {
             case "ressort-it":
                 listViewIT.getItems().add(i);
-                labelIT.setText("Ressort IT (" + listViewIT.getItems().size() + ")");
+                listViewIT.scrollTo(listViewIT.getItems().size());
+                labelIT.setText("Ressort IT (" + listViewIT.getItems().size() + " | " + String.format("%.0f", (listViewIT.getItems().size() / itAmount)*100) + "%)");
                 break;
             case "ressort-per":
                 listViewPersonal.getItems().add(i);
-                labelPersonal.setText("Ressort Personal (" + listViewPersonal.getItems().size() + ")");
+                listViewPersonal.scrollTo(listViewPersonal.getItems().size());
+                labelPersonal.setText("Ressort Personal (" + listViewPersonal.getItems().size() + " | " + String.format("%.0f", (listViewPersonal.getItems().size() / personalAmount)*100) + "%)");
                 break;
             case "ressort-aq":
                 listViewAkquise.getItems().add(i);
-                labelAkquise.setText("Ressort Akquise (" + listViewAkquise.getItems().size() + ")");
+                listViewAkquise.scrollTo(listViewAkquise.getItems().size());
+                labelAkquise.setText("Ressort Akquise (" + listViewAkquise.getItems().size() + " | " + String.format("%.0f", (listViewAkquise.getItems().size() / akquiseAmount)*100) + "%)");
                 break;
             case "ressort-pr":
                 listViewPR.getItems().add(i);
-                labelPR.setText("Ressort PR (" + listViewPR.getItems().size() + ")");
+                listViewPR.scrollTo(listViewPR.getItems().size());
+                labelPR.setText("Ressort PR (" + listViewPR.getItems().size() + " | " + String.format("%.0f", (listViewPR.getItems().size() / prAmount)*100) + "%)");
                 break;
             case "ressort-qm":
                 listViewQM.getItems().add(i);
-                labelQM.setText("Ressort QM (" + listViewQM.getItems().size() + ")");
+                listViewQM.scrollTo(listViewQM.getItems().size());
+                labelQM.setText("Ressort QM (" + listViewQM.getItems().size() + " | " + String.format("%.0f", (listViewQM.getItems().size() / qmAmount)*100) + "%)");
                 break;
             case "keins":
 
@@ -373,28 +438,31 @@ public class MainViewController
                 {
                     case "stab-1v":
                         listViewVorstand1.getItems().add(i);
-                        labelVorstand1.setText("1. Vorstand & Stab (" + listViewVorstand1.getItems().size() + ")");
+                        listViewVorstand1.scrollTo(listViewVorstand1.getItems().size());
+                        labelVorstand1.setText("1. Vorstand & Stab (" + listViewVorstand1.getItems().size() + " | " + String.format("%.0f", (listViewVorstand1.getItems().size() / vorstand1Amount)*100) + "%)");
                         break;
                     case "stab-2v":
                         listViewVorstand2.getItems().add(i);
-                        labelVorstand2.setText("2. Vorstand & Stab (" + listViewVorstand2.getItems().size() + ")");
+                        listViewVorstand2.scrollTo(listViewVorstand2.getItems().size());
+                        labelVorstand2.setText("2. Vorstand & Stab (" + listViewVorstand2.getItems().size() + " | " + String.format("%.0f", (listViewVorstand2.getItems().size() / vorstand2Amount)*100) + "%)");
                         break;
                     case "stab-3v":
                         listViewVorstand3.getItems().add(i);
-                        labelVorstand3.setText("3. Vorstand & Stab (" + listViewVorstand3.getItems().size() + ")");
+                        listViewVorstand3.scrollTo(listViewVorstand3.getItems().size());
+                        labelVorstand3.setText("3. Vorstand & Stab (" + listViewVorstand3.getItems().size() + " | " + String.format("%.0f", (listViewVorstand3.getItems().size() / vorstand3Amount)*100) + "%)");
                         break;
                     case "keiner":
                         listViewWeitere.getItems().add(i);
-                        labelWeitere.setText("Weitere (" + listViewWeitere.getItems().size() + ")");
+                        listViewWeitere.scrollTo(listViewWeitere.getItems().size());
+                        labelWeitere.setText("Weitere (" + listViewWeitere.getItems().size() + " | " + String.format("%.0f", (listViewWeitere.getItems().size() / weitereAmount)*100) + "%)");
                         break;
                 }
                 break;
         }
 
         //Anzahl erhöhen
-        int amount = Integer.valueOf(labelAmount.getText().replace("(", "").replace(")", ""));
-        amount++;
-        labelAmount.setText("(" + amount + ")");
+        actualAllAmount++;
+        labelAmount.setText("(" + actualAllAmount + " | " + String.format("%.0f", (actualAllAmount / allAmount)*100)+ "%)");
     }
     
     private void removeIntegranerFromList(Integraner integranerToDelete)
@@ -409,7 +477,7 @@ public class MainViewController
                         listViewIT.getItems().remove(pos);
                     }
                 }
-                labelIT.setText("Ressort IT (" + listViewIT.getItems().size() + ")");
+                labelIT.setText("Ressort IT (" + listViewIT.getItems().size() + " | " + String.format("%.0f", (listViewIT.getItems().size() / itAmount)*100) + "%)");
                 break;
             case "ressort-per":
                 for(int pos = 0; pos < listViewPersonal.getItems().size(); pos++)
@@ -419,7 +487,7 @@ public class MainViewController
                         listViewPersonal.getItems().remove(pos);
                     }
                 }
-                labelPersonal.setText("Ressort Personal (" + listViewPersonal.getItems().size() + ")");
+                labelPersonal.setText("Ressort Personal (" + listViewPersonal.getItems().size() + " | " + String.format("%.0f", (listViewPersonal.getItems().size() / personalAmount)*100) + "%)");
                 break;
             case "ressort-aq":
                 for(int pos = 0; pos < listViewAkquise.getItems().size(); pos++)
@@ -429,7 +497,7 @@ public class MainViewController
                         listViewAkquise.getItems().remove(pos);
                     }
                 }
-                labelAkquise.setText("Ressort Akquise (" + listViewAkquise.getItems().size() + ")");
+                labelAkquise.setText("Ressort Akquise (" + listViewAkquise.getItems().size() + " | " + String.format("%.0f", (listViewAkquise.getItems().size() / akquiseAmount)*100) + "%)");
                 break;
             case "ressort-pr":
                 for(int pos = 0; pos < listViewPR.getItems().size(); pos++)
@@ -439,7 +507,7 @@ public class MainViewController
                         listViewPR.getItems().remove(pos);
                     }
                 }
-                labelPR.setText("Ressort PR (" + listViewPR.getItems().size() + ")");
+                labelPR.setText("Ressort PR (" + listViewPR.getItems().size() + " | " + String.format("%.0f", (listViewPR.getItems().size() / prAmount)*100) + "%)");
                 break;
             case "ressort-qm":
                 for(int pos = 0; pos < listViewQM.getItems().size(); pos++)
@@ -449,7 +517,7 @@ public class MainViewController
                         listViewQM.getItems().remove(pos);
                     }
                 }
-                labelQM.setText("Ressort QM (" + listViewQM.getItems().size() + ")");
+                labelQM.setText("Ressort QM (" + listViewQM.getItems().size() + " | " + String.format("%.0f", (listViewQM.getItems().size() / qmAmount)*100) + "%)");
                 break;
             case "keins":
 
@@ -463,7 +531,7 @@ public class MainViewController
                                 listViewVorstand1.getItems().remove(pos);
                             }
                         }
-                        labelVorstand1.setText("1. Vorstand & Stab (" + listViewVorstand1.getItems().size() + ")");
+                        labelVorstand1.setText("1. Vorstand & Stab (" + listViewVorstand1.getItems().size() + " | " + String.format("%.0f", (listViewVorstand1.getItems().size() / vorstand1Amount)*100) + "%)");
                         break;
                     case "stab-2v":
                         for(int pos = 0; pos < listViewVorstand2.getItems().size(); pos++)
@@ -473,7 +541,7 @@ public class MainViewController
                                 listViewVorstand2.getItems().remove(pos);
                             }
                         }
-                        labelVorstand2.setText("2. Vorstand & Stab (" + listViewVorstand2.getItems().size() + ")");
+                        labelVorstand2.setText("2. Vorstand & Stab (" + listViewVorstand2.getItems().size() + " | " + String.format("%.0f", (listViewVorstand2.getItems().size() / vorstand2Amount)*100) + "%)");
                         break;
                     case "stab-3v":
                         for(int pos = 0; pos < listViewVorstand3.getItems().size(); pos++)
@@ -483,7 +551,7 @@ public class MainViewController
                                 listViewVorstand3.getItems().remove(pos);
                             }
                         }
-                        labelVorstand3.setText("3. Vorstand & Stab (" + listViewVorstand3.getItems().size() + ")");
+                        labelVorstand3.setText("3. Vorstand & Stab (" + listViewVorstand3.getItems().size() + " | " + String.format("%.0f", (listViewVorstand3.getItems().size() / vorstand3Amount)*100) + "%)");
                         break;
                     case "keiner":
                         for(int pos = 0; pos < listViewWeitere.getItems().size(); pos++)
@@ -493,16 +561,15 @@ public class MainViewController
                                 listViewWeitere.getItems().remove(pos);
                             }
                         }
-                        labelWeitere.setText("Weitere (" + listViewWeitere.getItems().size() + ")");
+                        labelWeitere.setText("Weitere (" + listViewWeitere.getItems().size() + " | " + String.format("%.0f", (listViewWeitere.getItems().size() / weitereAmount)*100) + "%)");
                         break;
                 }
                 break;
         }
 
-        //Anzahl erhöhen
-        int amount = Integer.valueOf(labelAmount.getText().replace("(", "").replace(")", ""));
-        amount--;
-        labelAmount.setText("(" + amount + ")");
+        //Anzahl verringern
+        actualAllAmount--;
+        labelAmount.setText("(" + actualAllAmount + " | " + String.format("%.0f", (actualAllAmount / allAmount)*100)+ "%)");
     }
 
     
