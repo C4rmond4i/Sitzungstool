@@ -268,6 +268,25 @@ public class DatabaseInterface {
         }
     }
     
+    public static ArrayList<Integraner> getAllIntegraner() {
+        try {
+            String selectSql = "SELECT * FROM integraner";
+            PreparedStatement selectStatement = DatabaseInterface.conn.prepareStatement(selectSql);
+            ResultSet selectResultSet = selectStatement.executeQuery();
+            ArrayList<Integraner> allIntegraner = new ArrayList<>();
+            while (selectResultSet.next()) {
+                Integraner integraner = new Integraner(selectResultSet.getString("benutzerkennung"));
+                integraner.setRessort(selectResultSet.getString("ressort"));
+                integraner.setStab(selectResultSet.getString("stab"));
+                allIntegraner.add(integraner);
+            }
+            return allIntegraner;
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            return new ArrayList<>();
+        }
+    }
+    
     public static boolean deleteAnwesenheit(Sitzung sitzung, String benutzerkennung) {
         try {
             String deleteAnwesenheitSql = "DELETE FROM anwesenheit WHERE sitzungs_id = ? AND benutzerkennung = ?";

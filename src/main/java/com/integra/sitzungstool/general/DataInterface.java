@@ -98,6 +98,13 @@ public class DataInterface {
         return null;
     }
     
+    public static ArrayList<Integraner> getAllIntegraner () {
+        if (DataInterface.hasDatabaseConnection()) {
+            return DatabaseInterface.getAllIntegraner();
+        }
+        return new ArrayList<>();
+    }
+    
     public static boolean saveLocalDbToServer() {
         return ServerCommunication.saveLocalDbToServer(DatabaseInterface.getNichtGespeicherteSitzungen());
     }
